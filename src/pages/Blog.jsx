@@ -1,167 +1,327 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
+import { motion } from 'framer-motion'
 import AOS from 'aos'
 import 'aos/dist/aos.css'
 
 const Blog = () => {
+  const [dailyQuote, setDailyQuote] = useState({
+    content: "We are what we repeatedly do. Excellence, then, is not an act, but a habit.",
+    author: "Aristotle"
+  })
+
   useEffect(() => {
     AOS.init({
-      duration: 600,
+      duration: 800,
       easing: 'ease-in-out',
-      once: true,
-      mirror: false
+      once: true
     })
+    
+    fetchDailyQuote()
   }, [])
 
-  const blogPosts = [
+  const fetchDailyQuote = async () => {
+    try {
+      const response = await fetch('https://api.quotable.io/random?tags=motivational|success')
+      const data = await response.json()
+      setDailyQuote({
+        content: data.content,
+        author: data.author
+      })
+    } catch (error) {
+      console.error('Error fetching quote:', error)
+    }
+  }
+
+  const habitArticles = [
     {
-      id: 1,
-      title: "The Science Behind Habit Formation",
-      excerpt: "Discover how your brain creates habits and how you can leverage this knowledge to build better routines.",
-      image: "habit2.webp",
-      date: "2024-01-15",
-      author: "Dr. Sashi Bhusan Nayak",
-      category: "Science",
-      readTime: "5 min read"
+      title: "The Science of Habit Formation",
+      description: "Learn how habits are formed in the brain and how you can rewire your routines for success.",
+      image: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+      url: "https://www.quora.com/What-is-the-science-behind-habit-formation"
     },
     {
-      id: 2,
-      title: "21 Days to Transform Your Life",
-      excerpt: "Learn why 21 days is the magic number for habit formation and how to make the most of this period.",
-      image: "habit3.jpg",
-      date: "2024-01-10",
-      author: "HabitUP Team",
-      category: "Transformation",
-      readTime: "7 min read"
+      title: "Morning Routines of High Achievers",
+      description: "Discover how successful people start their day to maximize productivity and well-being.",
+      image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+      url: "https://www.quora.com/What-are-the-morning-routines-of-highly-successful-people"
     },
     {
-      id: 3,
-      title: "Morning Routines of Successful People",
-      excerpt: "Explore the morning habits that set successful individuals apart and how you can implement them.",
-      image: "habit4.jpg",
-      date: "2024-01-05",
-      author: "Dr. Sashi Bhusan Nayak",
-      category: "Productivity",
-      readTime: "6 min read"
-    },
-    {
-      id: 4,
-      title: "Overcoming Habit Setbacks",
-      excerpt: "What to do when you break your streak and how to get back on track without losing motivation.",
-      image: "habit5.jpg",
-      date: "2024-01-01",
-      author: "HabitUP Team",
-      category: "Motivation",
-      readTime: "4 min read"
+      title: "Building Healthy Eating Habits",
+      description: "Transform your relationship with food through sustainable habit changes.",
+      image: "https://images.unsplash.com/photo-1498837167922-ddd27525d352?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+      url: "https://en.wikipedia.org/wiki/Healthy_diet"
     }
   ]
 
-  const categories = ["All", "Science", "Transformation", "Productivity", "Motivation"]
+  const healthNews = [
+    {
+      title: "New Study Shows How 8,000 Weekly Steps Improve Health",
+      source: "Science Daily",
+      date: "May 15, 2023",
+      image: "https://images.unsplash.com/photo-1490645935967-10de6ba17061?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+      url: "https://www.quora.com/How-many-steps-per-day-are-optimal-for-health"
+    },
+    {
+      title: "Meditation Reduces Stress by 40% in 8 Weeks",
+      source: "MindBodyGreen",
+      date: "May 10, 2023",
+      image: "https://images.unsplash.com/photo-1545205597-3d9d02c29597?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+      url: "https://en.wikipedia.org/wiki/Meditation"
+    },
+    {
+      title: "The Surprising Link Between Sleep and Weight Loss",
+      source: "Harvard Health",
+      date: "May 5, 2023",
+      image: "https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+      url: "https://www.quora.com/What-is-the-relationship-between-sleep-and-weight-loss"
+    }
+  ]
+
+  const habitTips = [
+    {
+      title: "Start Small",
+      content: "Begin with tiny habits that are easy to accomplish. Consistency with small actions builds the foundation for bigger changes.",
+      icon: "bi bi-calendar-check",
+      url: "https://www.quora.com/Why-is-starting-small-important-when-building-new-habits"
+    },
+    {
+      title: "Use Triggers",
+      content: "Pair your new habit with an existing routine. For example, do 5 pushups after brushing your teeth each morning.",
+      icon: "bi bi-alarm",
+      url: "https://en.wikipedia.org/wiki/Habit#Formation"
+    },
+    {
+      title: "Track Progress",
+      content: "Use a habit tracker to visualize your consistency. Seeing your streak will motivate you to keep going.",
+      icon: "bi bi-graph-up",
+      url: "https://www.quora.com/What-are-the-best-ways-to-track-habit-progress"
+    }
+  ]
 
   return (
-    <div className="pt-20">
+    <div className="pt-16 sm:pt-20 bg-gray-50 min-h-screen">
       {/* Hero Section */}
-      <section className="py-20 bg-gradient-to-r from-purple-600 to-blue-600 text-white">
-        <div className="container mx-auto px-4 text-center">
-          <h1 className="text-4xl lg:text-5xl font-bold mb-6" data-aos="fade-up">
-            HabitUP Blog
-          </h1>
-          <p className="text-xl mb-8 max-w-2xl mx-auto" data-aos="fade-up" data-aos-delay="100">
-            Discover insights, tips, and strategies to build better habits and transform your life
-          </p>
+      <section className="relative py-24 bg-gradient-to-br from-indigo-600 via-purple-600 to-purple-700 text-white overflow-hidden">
+        <div className="absolute inset-0 bg-black/30"></div>
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <motion.div
+            className="text-center"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+              Transform Your Life Through Habits
+            </h1>
+            <p className="text-xl sm:text-2xl mb-8 text-white/90 max-w-3xl mx-auto leading-relaxed">
+              Small daily improvements are the key to staggering long-term results. Start building better habits today.
+            </p>
+            <a
+              href="#transformation"
+              className="inline-block bg-white text-purple-600 px-8 py-4 rounded-full font-semibold text-lg hover:bg-gray-100 transition-colors duration-300 shadow-lg hover:shadow-xl"
+            >
+              Begin Your Journey
+            </a>
+          </motion.div>
         </div>
       </section>
 
-      {/* Categories Filter */}
-      <section className="py-8 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-wrap justify-center gap-4">
-            {categories.map((category, index) => (
-              <button
+      {/* Habit Transformation Section */}
+      <section className="py-20 bg-white" id="transformation">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            className="text-center mb-16"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+          >
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4 text-yellow-600">
+              The Power of Habit Transformation
+            </h2>
+            <div className="w-20 h-1 bg-purple-600 mx-auto rounded-full mb-4"></div>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              Discover how small changes can lead to massive results
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {habitArticles.map((article, index) => (
+              <motion.div
                 key={index}
-                className={`px-6 py-2 rounded-full transition-all duration-300 ${
-                  index === 0 
-                    ? 'bg-purple-600 text-white' 
-                    : 'bg-white text-gray-600 hover:bg-purple-100'
-                }`}
+                className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 group"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                whileHover={{ y: -10 }}
               >
-                {category}
-              </button>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Blog Posts Grid */}
-      <section className="py-16">
-        <div className="container mx-auto px-4">
-          <div className="grid lg:grid-cols-2 gap-8">
-            {blogPosts.map((post, index) => (
-              <article 
-                key={post.id} 
-                className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
-                data-aos="fade-up"
-                data-aos-delay={index * 100}
-              >
-                <div className="relative">
+                <div className="h-48 overflow-hidden">
                   <img
-                    src={`/img/${post.image}`}
-                    alt={post.title}
-                    className="w-full h-64 object-cover"
+                    src={article.image}
+                    alt={article.title}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                   />
-                  <div className="absolute top-4 left-4">
-                    <span className="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">
-                      {post.category}
-                    </span>
-                  </div>
                 </div>
                 <div className="p-6">
-                  <div className="flex items-center text-sm text-gray-500 mb-3">
-                    <span>{new Date(post.date).toLocaleDateString()}</span>
-                    <span className="mx-2">•</span>
-                    <span>{post.readTime}</span>
-                    <span className="mx-2">•</span>
-                    <span>{post.author}</span>
-                  </div>
-                  <h2 className="text-xl font-bold mb-3 text-gray-800 hover:text-purple-600 transition-colors">
-                    <a href={`#blog-${post.id}`}>{post.title}</a>
-                  </h2>
+                  <h3 className="text-xl font-semibold mb-3 text-purple-600 group-hover:text-purple-700 transition-colors">
+                    {article.title}
+                  </h3>
                   <p className="text-gray-600 mb-4 leading-relaxed">
-                    {post.excerpt}
+                    {article.description}
                   </p>
                   <a
-                    href={`#blog-${post.id}`}
-                    className="inline-flex items-center text-purple-600 font-medium hover:text-purple-700 transition-colors"
+                    href={article.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-block border-2 border-purple-600 text-purple-600 px-4 py-2 rounded-lg font-medium hover:bg-purple-600 hover:text-white transition-colors duration-300"
                   >
                     Read More
-                    <i className="fas fa-arrow-right ml-2"></i>
                   </a>
                 </div>
-              </article>
+              </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Newsletter Signup */}
-      <section className="py-16 bg-gray-50">
-        <div className="container mx-auto px-4 text-center">
-          <div className="max-w-2xl mx-auto" data-aos="fade-up">
-            <h2 className="text-3xl font-bold mb-4 text-gray-800">
-              Stay Updated with Our Latest Posts
-            </h2>
-            <p className="text-gray-600 mb-8">
-              Get weekly insights and tips delivered straight to your inbox
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="flex-1 px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-600"
-              />
-              <button className="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors">
-                Subscribe
-              </button>
+      {/* Daily Motivation Section */}
+      <section className="py-20 bg-gradient-to-br from-gray-100 to-blue-100">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            className="max-w-4xl mx-auto"
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+          >
+            <div className="bg-white rounded-2xl p-8 sm:p-12 shadow-xl relative">
+              <div className="absolute top-6 left-6 text-6xl text-purple-600/20 font-serif leading-none">
+                "
+              </div>
+              <div className="relative z-10">
+                <p className="text-2xl sm:text-3xl font-medium italic text-gray-800 mb-6 leading-relaxed">
+                  "{dailyQuote.content}"
+                </p>
+                <p className="text-right text-purple-600 font-semibold text-lg">
+                  — {dailyQuote.author}
+                </p>
+              </div>
             </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Wellness News Section */}
+      <section className="py-20 bg-white" id="news">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            className="text-center mb-16"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+          >
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4 text-yellow-600">
+              Latest Wellness News
+            </h2>
+            <div className="w-20 h-1 bg-purple-600 mx-auto rounded-full mb-4"></div>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              Stay updated with the latest research in health and habit formation
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {healthNews.map((news, index) => (
+              <motion.div
+                key={index}
+                className="bg-gray-50 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 group"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                whileHover={{ y: -5 }}
+              >
+                <div className="h-44 overflow-hidden">
+                  <img
+                    src={news.image}
+                    alt={news.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                </div>
+                <div className="p-6">
+                  <span className="inline-block bg-purple-600 text-white px-3 py-1 rounded-full text-xs font-semibold mb-3">
+                    {news.source}
+                  </span>
+                  <h3 className="text-lg font-semibold mb-2 text-purple-600 group-hover:text-purple-700 transition-colors">
+                    {news.title}
+                  </h3>
+                  <p className="text-gray-500 text-sm mb-4">{news.date}</p>
+                  <a
+                    href={news.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-block bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-purple-700 transition-colors duration-300"
+                  >
+                    Read Article
+                  </a>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Habit Tips Section */}
+      <section className="py-20 bg-gray-50" id="tips">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            className="text-center mb-16"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+          >
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4 text-yellow-600">
+              Practical Habit Building Tips
+            </h2>
+            <div className="w-20 h-1 bg-purple-600 mx-auto rounded-full mb-4"></div>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              Actionable strategies to help you build lasting habits
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {habitTips.map((tip, index) => (
+              <motion.div
+                key={index}
+                className="bg-white rounded-xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 relative overflow-hidden group"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                whileHover={{ y: -5 }}
+              >
+                <div className="absolute top-0 left-0 w-1 h-full bg-purple-600"></div>
+                <div className="text-4xl text-purple-600 mb-6 group-hover:scale-110 transition-transform duration-300">
+                  <i className={tip.icon}></i>
+                </div>
+                <h3 className="text-xl font-semibold mb-4 text-purple-600">
+                  {tip.title}
+                </h3>
+                <p className="text-gray-600 mb-6 leading-relaxed">
+                  {tip.content}
+                </p>
+                <a
+                  href={tip.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block border-2 border-purple-600 text-purple-600 px-4 py-2 rounded-lg text-sm font-medium hover:bg-purple-600 hover:text-white transition-colors duration-300"
+                >
+                  Learn More
+                </a>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>

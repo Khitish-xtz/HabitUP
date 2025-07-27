@@ -20,27 +20,38 @@ const Footer = () => {
         <div className="flex justify-center space-x-4 mb-8">
           <a 
             href="#" 
-            className="w-9 h-9 bg-accent-400 text-primary-500 rounded-full flex items-center justify-center transition-all duration-300 hover:bg-accent-500"
+            className="w-10 h-10 bg-accent-400 text-primary-500 rounded-full flex items-center justify-center transition-all duration-300 hover:bg-accent-500 hover:scale-110 hover:shadow-lg group"
+            aria-label="Facebook"
           >
-            <i className="fab fa-facebook-f"></i>
+            <i className="fab fa-facebook-f text-lg group-hover:animate-pulse"></i>
           </a>
           <a 
             href="#" 
-            className="w-9 h-9 bg-accent-400 text-primary-500 rounded-full flex items-center justify-center transition-all duration-300 hover:bg-accent-500"
+            className="w-10 h-10 bg-accent-400 text-primary-500 rounded-full flex items-center justify-center transition-all duration-300 hover:bg-accent-500 hover:scale-110 hover:shadow-lg group"
+            aria-label="Twitter"
           >
-            <i className="fab fa-twitter"></i>
+            <i className="fab fa-twitter text-lg group-hover:animate-pulse"></i>
           </a>
           <a 
             href="#" 
-            className="w-9 h-9 bg-accent-400 text-primary-500 rounded-full flex items-center justify-center transition-all duration-300 hover:bg-accent-500"
+            className="w-10 h-10 bg-accent-400 text-primary-500 rounded-full flex items-center justify-center transition-all duration-300 hover:bg-accent-500 hover:scale-110 hover:shadow-lg group"
+            aria-label="Instagram"
           >
-            <i className="fab fa-instagram"></i>
+            <i className="fab fa-instagram text-lg group-hover:animate-pulse"></i>
           </a>
           <a 
             href="#" 
-            className="w-9 h-9 bg-accent-400 text-primary-500 rounded-full flex items-center justify-center transition-all duration-300 hover:bg-accent-500"
+            className="w-10 h-10 bg-accent-400 text-primary-500 rounded-full flex items-center justify-center transition-all duration-300 hover:bg-accent-500 hover:scale-110 hover:shadow-lg group"
+            aria-label="LinkedIn"
           >
-            <i className="fab fa-linkedin-in"></i>
+            <i className="fab fa-linkedin-in text-lg group-hover:animate-pulse"></i>
+          </a>
+          <a 
+            href="#" 
+            className="w-10 h-10 bg-accent-400 text-primary-500 rounded-full flex items-center justify-center transition-all duration-300 hover:bg-accent-500 hover:scale-110 hover:shadow-lg group"
+            aria-label="YouTube"
+          >
+            <i className="fab fa-youtube text-lg group-hover:animate-pulse"></i>
           </a>
         </div>
         

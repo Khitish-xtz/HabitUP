@@ -1,9 +1,14 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useAuth } from '../contexts/AuthContext'
+import { useNavigate } from 'react-router-dom'
 import AOS from 'aos'
 import 'aos/dist/aos.css'
 
 const Dashboard = () => {
+    const { isAuthenticated, isLoading, user } = useAuth()
+    const navigate = useNavigate()
+
     const [habits, setHabits] = useState([
         { id: 1, name: 'Morning Meditation', completed: true, streak: 15, target: 30 },
         { id: 2, name: 'Daily Exercise', completed: false, streak: 8, target: 21 },
@@ -23,6 +28,30 @@ const Dashboard = () => {
             mirror: false
         })
     }, [])
+
+    // Redirect to home if not authenticated
+    useEffect(() => {
+        if (!isLoading && !isAuthenticated) {
+            navigate('/')
+        }
+    }, [isAuthenticated, isLoading, navigate])
+
+    // Show loading while checking authentication
+    if (isLoading) {
+        return (
+            <div className="pt-16 sm:pt-20 min-h-screen bg-gray-50 flex items-center justify-center">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                    <p className="text-gray-600">Loading...</p>
+                </div>
+            </div>
+        )
+    }
+
+    // Redirect if not authenticated
+    if (!isAuthenticated) {
+        return null
+    }
 
     const toggleHabit = (id) => {
         setHabits(habits.map(habit =>
@@ -63,7 +92,7 @@ const Dashboard = () => {
                 {/* Header */}
                 <div className="mb-6 sm:mb-8" data-aos="fade-up">
                     <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">
-                        Welcome back! 👋
+                        Welcome back, {user?.firstName}! 👋
                     </h1>
                     <p className="text-gray-600 text-sm sm:text-base">
                         Track your habits and build a better you, one day at a time.
@@ -218,8 +247,8 @@ const Dashboard = () => {
                                         <motion.div
                                             key={habit.id}
                                             className={`p-3 sm:p-4 rounded-lg border-2 transition-all ${habit.completed
-                                                    ? 'bg-green-50 border-green-200'
-                                                    : 'bg-gray-50 border-gray-200 hover:border-blue-300'
+                                                ? 'bg-green-50 border-green-200'
+                                                : 'bg-gray-50 border-gray-200 hover:border-blue-300'
                                                 }`}
                                             initial={{ opacity: 0, x: -20 }}
                                             animate={{ opacity: 1, x: 0 }}
@@ -233,8 +262,8 @@ const Dashboard = () => {
                                                     <motion.button
                                                         onClick={() => toggleHabit(habit.id)}
                                                         className={`w-5 h-5 sm:w-6 sm:h-6 rounded-full border-2 flex items-center justify-center transition-colors flex-shrink-0 ${habit.completed
-                                                                ? 'bg-green-500 border-green-500 text-white'
-                                                                : 'border-gray-300 hover:border-blue-500'
+                                                            ? 'bg-green-500 border-green-500 text-white'
+                                                            : 'border-gray-300 hover:border-blue-500'
                                                             }`}
                                                         whileHover={{ scale: 1.1 }}
                                                         whileTap={{ scale: 0.9 }}

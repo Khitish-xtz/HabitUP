@@ -1,303 +1,569 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
+import { motion } from 'framer-motion'
+import { useAuth } from '../contexts/AuthContext'
 import AOS from 'aos'
 import 'aos/dist/aos.css'
 
 const Services = () => {
+  const { user } = useAuth()
+  const [userType, setUserType] = useState('Adult')
+
   useEffect(() => {
     AOS.init({
-      duration: 600,
+      duration: 800,
       easing: 'ease-in-out',
-      once: true,
-      mirror: false
+      once: true
     })
-  }, [])
-
-  const services = [
-    {
-      icon: 'fa-solid fa-brain',
-      title: 'Hypnosis & Affirmations',
-      description: 'Reprogram your subconscious mind with powerful hypnosis sessions and positive affirmations designed to break limiting beliefs.',
-      features: ['Guided hypnosis sessions', 'Personalized affirmations', 'Subconscious reprogramming', 'Stress reduction techniques'],
-      price: '₹2,999',
-      duration: 'per month'
-    },
-    {
-      icon: 'fa-solid fa-om',
-      title: 'Kriya Yoga Sessions',
-      description: 'Live, unrecorded virtual sessions to build the habit of regular meditation within a devoted community of practitioners.',
-      features: ['Live virtual sessions', 'Community support', 'Ancient Kriya techniques', 'Personalized guidance'],
-      price: '₹1,999',
-      duration: 'per month',
-      popular: true
-    },
-    {
-      icon: 'fa-solid fa-chart-line',
-      title: 'Habit Tracking System',
-      description: 'Advanced habit tracking with analytics, progress reports, and personalized recommendations for sustainable change.',
-      features: ['Progress analytics', 'Streak tracking', 'Custom reminders', 'Performance insights'],
-      price: '₹999',
-      duration: 'per month'
-    },
-    {
-      icon: 'fa-solid fa-users',
-      title: '21-Day Challenges',
-      description: 'Structured challenges designed to help you build specific habits with community support and expert guidance.',
-      features: ['Guided challenges', 'Daily check-ins', 'Community interaction', 'Expert support'],
-      price: '₹1,499',
-      duration: 'per challenge'
-    },
-    {
-      icon: 'fa-solid fa-user-tie',
-      title: 'Personal Coaching',
-      description: 'One-on-one coaching sessions with experienced habit formation specialists for personalized transformation.',
-      features: ['Individual sessions', 'Customized plans', 'Weekly check-ins', 'Progress monitoring'],
-      price: '₹4,999',
-      duration: 'per month'
-    },
-    {
-      icon: 'fa-solid fa-book-open',
-      title: 'Resource Library',
-      description: 'Access to exclusive content including guided meditations, worksheets, and expert interviews.',
-      features: ['Meditation library', 'Habit worksheets', 'Expert interviews', 'Science-backed content'],
-      price: '₹499',
-      duration: 'per month'
+    
+    // Get user type from user data or default to Adult
+    if (user?.userType) {
+      setUserType(user.userType)
     }
-  ]
+  }, [user])
+
+  const getHeroContent = () => {
+    switch(userType) {
+      case 'Child':
+        return {
+          title: 'Fun & Engaging Programs for Kids',
+          description: 'Help your child develop healthy habits, focus, and creativity through our interactive sessions designed just for them.'
+        }
+      case 'Elder':
+        return {
+          title: 'Gentle & Nurturing Programs for Seniors',
+          description: 'Maintain vitality, peace of mind, and spiritual growth in your golden years with our specially designed programs.'
+        }
+      case 'Doctor':
+        return {
+          title: 'Coach Dashboard',
+          description: 'Connect with and guide your clients through our coaching platform.'
+        }
+      default:
+        return {
+          title: 'Transformative Programs for Adults',
+          description: 'Comprehensive programs to manage stress, improve productivity, and find balance in modern life through time-tested techniques.'
+        }
+    }
+  }
+
+  const getServicesContent = () => {
+    switch(userType) {
+      case 'Child':
+        return [
+          {
+            title: 'Balgopal Gita Chanting',
+            description: 'Introduce children to the divine wisdom of the Bhagavad Gita through simple chanting sessions with melodic tunes that make learning enjoyable and memorable.',
+            icon: 'bi-music-note-beamed',
+            image: 'https://images.unsplash.com/photo-1517842645767-c639042777db?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60'
+          },
+          {
+            title: 'Meditation & Yoga',
+            description: 'Child-friendly yoga poses and short meditation exercises to improve concentration, reduce anxiety, and promote physical flexibility and balance.',
+            icon: 'bi-tree',
+            image: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60'
+          },
+          {
+            title: 'Memory Hacks',
+            description: 'Fun techniques based on ancient Vedic memory methods to enhance learning capacity, recall ability, and academic performance.',
+            icon: 'bi-lightbulb',
+            image: 'https://images.unsplash.com/photo-1517842645767-c639042777db?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60'
+          }
+        ]
+      case 'Elder':
+        return [
+          {
+            title: 'Gentle Yoga & Meditation',
+            description: 'Specially designed gentle yoga sequences and meditation practices that accommodate physical limitations while promoting flexibility and inner peace.',
+            icon: 'bi-heart',
+            image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60'
+          },
+          {
+            title: 'Spiritual Guidance',
+            description: 'Deep spiritual discussions and guidance based on ancient wisdom texts to find meaning, purpose, and peace in the golden years of life.',
+            icon: 'bi-book',
+            image: 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60'
+          },
+          {
+            title: 'Health & Wellness',
+            description: 'Holistic health practices including breathing exercises, gentle movements, and lifestyle guidance to maintain vitality and well-being.',
+            icon: 'bi-shield-check',
+            image: 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60'
+          }
+        ]
+      default: // Adult
+        return [
+          {
+            title: 'Stress Management',
+            description: 'Learn powerful techniques to manage work-life stress, anxiety, and overwhelm through meditation, breathing exercises, and mindfulness practices.',
+            icon: 'bi-peace',
+            image: 'https://images.unsplash.com/photo-1545205597-3d9d02c29597?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60'
+          },
+          {
+            title: 'Productivity Enhancement',
+            description: 'Boost your focus, concentration, and productivity through ancient techniques combined with modern time management strategies.',
+            icon: 'bi-graph-up-arrow',
+            image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60'
+          },
+          {
+            title: 'Life Balance',
+            description: 'Find harmony between personal and professional life through holistic practices that nurture mind, body, and spirit.',
+            icon: 'bi-yin-yang',
+            image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60'
+          },
+          {
+            title: 'Habit Formation',
+            description: 'Build lasting positive habits and break negative patterns using scientifically-backed methods combined with ancient wisdom.',
+            icon: 'bi-arrow-repeat',
+            image: 'https://images.unsplash.com/photo-1434494878577-86c23bcb06b9?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60'
+          }
+        ]
+    }
+  }
 
   const testimonials = [
     {
-      name: 'Priya Sharma',
-      role: 'Software Engineer',
-      image: '/img/ChildBoyReview.jpg',
-      quote: 'HabitUP transformed my daily routine. The meditation sessions helped me find inner peace and build lasting habits.',
-      rating: 5
+      quote: "The meditation techniques I learned here have completely changed my daily routine. I'm more focused and peaceful than ever before.",
+      author: "Priyansh Sharma",
+      role: "Adult Program",
+      image: "/img/ElderBoyReview.jpg"
     },
     {
-      name: 'Rajesh Kumar',
-      role: 'Business Owner',
-      image: '/img/ElderBoyReview.jpg',
-      quote: 'The 21-day challenges were exactly what I needed. The community support made all the difference in my journey.',
-      rating: 5
+      quote: "My kids love the Balgopal sessions! They look forward to it every week and I can already see positive changes in their behavior.",
+      author: "Rahul Verma",
+      role: "Parent",
+      image: "/img/ChildBoyReview.jpg"
     },
     {
-      name: 'Anita Patel',
-      role: 'Teacher',
-      image: '/img/ElderGirlReview.jpg',
-      quote: 'The hypnosis sessions helped me overcome years of limiting beliefs. I feel more confident and focused than ever.',
-      rating: 5
+      quote: "As a senior citizen, I was skeptical at first, but the gentle yoga and meditation sessions have improved my mobility and peace of mind.",
+      author: "Shanti Devi",
+      role: "Elder Program",
+      image: "/img/ElderGirlReview.jpg"
     }
   ]
 
+  const faqs = [
+    {
+      question: "How do I choose the right program for me?",
+      answer: "Our programs are designed for different age groups and needs. Simply select your user type (Child, Adult, or Elder) during registration, and we'll recommend the most suitable programs for you. You can always change or adjust your program later."
+    },
+    {
+      question: "What technology do I need to participate?",
+      answer: "You'll need a smartphone or computer with internet access. We use WhatsApp for communication and Google Meet for live sessions. No special software is required beyond these free applications."
+    },
+    {
+      question: "Can I switch between different programs?",
+      answer: "Yes, you can switch programs at any time. Our mentors will help guide you to the most appropriate program based on your needs and progress. There's no additional charge for switching between programs."
+    },
+    {
+      question: "How are the mentors selected?",
+      answer: "All our mentors undergo a rigorous selection process including background checks, verification of qualifications, and extensive training in our methodology. They are experienced practitioners who are passionate about helping others."
+    },
+    {
+      question: "What if I miss a live session?",
+      answer: "While we encourage attending live sessions for the best experience, we understand that sometimes you might miss one. We provide session summaries and practice materials after each session, and you can schedule a catch-up with your mentor if needed."
+    }
+  ]
+
+  const [openFaq, setOpenFaq] = useState(null)
+  const heroContent = getHeroContent()
+  const servicesContent = getServicesContent()
+
   return (
-    <div className="pt-20">
+    <div className="pt-16 sm:pt-20 bg-gray-50 min-h-screen">
       {/* Hero Section */}
-      <section className="bg-primary-500 text-white py-20">
-        <div className="container mx-auto px-4 text-center">
-          <h1 className="text-4xl lg:text-5xl font-bold mb-6 font-raleway" data-aos="fade-up">
-            Our Services
-          </h1>
-          <p className="text-xl text-white/90 max-w-3xl mx-auto leading-relaxed" data-aos="fade-up" data-aos-delay="100">
-            Comprehensive programs designed to help you build lasting habits and transform your life
-          </p>
+      <section className="relative py-24 bg-gradient-to-br from-slate-700 via-slate-800 to-slate-900 text-white overflow-hidden">
+        <div className="absolute inset-0 bg-black/30"></div>
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <motion.div
+            className="text-center"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+              {heroContent.title}
+            </h1>
+            <p className="text-xl sm:text-2xl mb-8 text-white/90 max-w-4xl mx-auto leading-relaxed">
+              {heroContent.description}
+            </p>
+            <a
+              href="#services-section"
+              className="inline-block bg-green-600 text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-green-700 transition-colors duration-300 shadow-lg hover:shadow-xl"
+            >
+              Explore Services
+            </a>
+          </motion.div>
         </div>
       </section>
 
-      {/* Services Grid */}
-      <section className="py-16">
-        <div className="container mx-auto px-4">
-          <div className="grid lg:grid-cols-3 md:grid-cols-2 gap-8">
-            {services.map((service, index) => (
-              <div 
-                key={index} 
-                className={`relative bg-white rounded-lg shadow-lg p-8 transition-all duration-300 hover:shadow-xl hover:scale-105 ${
-                  service.popular ? 'border-4 border-accent-400' : 'border border-gray-200'
-                }`}
-                data-aos="fade-up" 
-                data-aos-delay={100 + index * 100}
+      {/* Services Section */}
+      <section className="py-20 bg-white" id="services-section">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            className="text-center mb-16"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+          >
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4 text-slate-700">
+              Our Services for {userType === 'Child' ? 'Children' : userType === 'Elder' ? 'Seniors' : 'Adults'}
+            </h2>
+            <div className="w-20 h-1 bg-green-600 mx-auto rounded-full mb-4"></div>
+            <p className="text-gray-600 max-w-3xl mx-auto">
+              {userType === 'Child' 
+                ? 'Engaging programs designed to cultivate healthy habits, focus, and creativity in young minds through fun and interactive sessions.'
+                : userType === 'Elder'
+                ? 'Gentle and nurturing programs to maintain vitality, peace of mind, and spiritual growth in your golden years.'
+                : 'Comprehensive programs to manage stress, improve productivity, and find balance in modern life through time-tested techniques.'
+              }
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {servicesContent.map((service, index) => (
+              <motion.div
+                key={index}
+                className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 group relative"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                whileHover={{ y: -10 }}
               >
-                {service.popular && (
-                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                    <span className="bg-accent-400 text-primary-500 px-4 py-2 rounded-full text-sm font-bold">
-                      Most Popular
-                    </span>
-                  </div>
-                )}
+                <div className="absolute inset-0 bg-gradient-to-br from-green-600/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 
-                <div className="text-center mb-6">
-                  <div className="w-16 h-16 bg-accent-400 text-white rounded-full flex items-center justify-center text-2xl mx-auto mb-4">
+                <div className="h-48 overflow-hidden">
+                  <img
+                    src={service.image}
+                    alt={service.title}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                  />
+                </div>
+                
+                <div className="p-6 relative z-10">
+                  <div className="text-4xl text-green-600 mb-4 group-hover:rotate-12 group-hover:scale-110 transition-transform duration-300">
                     <i className={service.icon}></i>
                   </div>
-                  <h3 className="text-xl font-bold text-primary-500 mb-3">{service.title}</h3>
-                  <p className="text-gray-600 leading-relaxed">{service.description}</p>
-                </div>
-
-                <ul className="space-y-3 mb-6">
-                  {service.features.map((feature, featureIndex) => (
-                    <li key={featureIndex} className="flex items-center space-x-3">
-                      <i className="bi bi-check-circle text-accent-400"></i>
-                      <span className="text-gray-600 text-sm">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                <div className="text-center border-t pt-6">
-                  <div className="mb-4">
-                    <span className="text-3xl font-bold text-primary-500">{service.price}</span>
-                    <span className="text-gray-500 text-sm">/{service.duration}</span>
-                  </div>
-                  <button className="w-full bg-accent-400 text-primary-500 font-bold py-3 px-6 rounded-full transition-all duration-300 hover:bg-accent-500 hover:shadow-lg">
-                    Get Started
+                  <h3 className="text-xl font-semibold mb-3 text-slate-700 group-hover:text-green-600 transition-colors">
+                    {service.title}
+                  </h3>
+                  <p className="text-gray-600 mb-4 leading-relaxed">
+                    {service.description}
+                  </p>
+                  <button className="bg-green-600 text-white px-5 py-2 rounded-full font-medium hover:bg-green-700 transition-colors duration-300 relative overflow-hidden">
+                    Learn More
                   </button>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Process Section */}
-      <section className="py-16 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16" data-aos="fade-up">
-            <h2 className="text-3xl font-bold mb-4 text-primary-500 font-raleway">How It Works</h2>
-            <p className="text-gray-600 text-lg">Simple steps to start your transformation journey</p>
+      {/* How It Works Section */}
+      {userType !== 'Doctor' && (
+        <section className="py-20 bg-gray-50">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <motion.div
+              className="text-center mb-16"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+            >
+              <h2 className="text-3xl sm:text-4xl font-bold mb-4 text-slate-700">
+                How Our Services Work
+              </h2>
+              <div className="w-20 h-1 bg-green-600 mx-auto rounded-full mb-4"></div>
+              <p className="text-gray-600 max-w-2xl mx-auto">
+                Simple steps to transform your life through our guided programs
+              </p>
+            </motion.div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <motion.div
+                className="text-center p-6"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.1 }}
+              >
+                <div className="text-4xl text-green-600 mb-4">
+                  <i className="bi bi-envelope"></i>
+                </div>
+                <h3 className="text-xl font-semibold mb-3 text-slate-700">1. Mail Details</h3>
+                <p className="text-gray-600">
+                  After registration, you'll receive mentor details and Meeting link via Gmail.
+                </p>
+              </motion.div>
+
+              <motion.div
+                className="text-center p-6"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+              >
+                <div className="text-4xl text-green-600 mb-4">
+                  <i className="bi bi-calendar-check"></i>
+                </div>
+                <h3 className="text-xl font-semibold mb-3 text-slate-700">2. Session Timing</h3>
+                <p className="text-gray-600">
+                  Your session timing will be confirmed and shared through mail communication.
+                </p>
+              </motion.div>
+
+              <motion.div
+                className="text-center p-6"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+              >
+                <div className="text-4xl text-green-600 mb-4">
+                  <i className="bi bi-people"></i>
+                </div>
+                <h3 className="text-xl font-semibold mb-3 text-slate-700">3. Live Session</h3>
+                <p className="text-gray-600">
+                  Attend the live session with our expert mentor at the scheduled time via the meeting here.
+                </p>
+              </motion.div>
+            </div>
           </div>
-
-          <div className="grid md:grid-cols-4 gap-8">
-            <div className="text-center" data-aos="fade-up" data-aos-delay="100">
-              <div className="w-20 h-20 bg-accent-400 text-white rounded-full flex items-center justify-center text-2xl mx-auto mb-6 relative">
-                <i className="bi bi-person-plus"></i>
-                <span className="absolute -top-2 -right-2 w-8 h-8 bg-primary-500 text-white rounded-full flex items-center justify-center text-sm font-bold">1</span>
-              </div>
-              <h3 className="text-lg font-bold mb-3 text-primary-500">Sign Up</h3>
-              <p className="text-gray-600 text-sm">Create your account and complete the initial assessment to understand your goals.</p>
-            </div>
-
-            <div className="text-center" data-aos="fade-up" data-aos-delay="200">
-              <div className="w-20 h-20 bg-accent-400 text-white rounded-full flex items-center justify-center text-2xl mx-auto mb-6 relative">
-                <i className="bi bi-gear"></i>
-                <span className="absolute -top-2 -right-2 w-8 h-8 bg-primary-500 text-white rounded-full flex items-center justify-center text-sm font-bold">2</span>
-              </div>
-              <h3 className="text-lg font-bold mb-3 text-primary-500">Choose Plan</h3>
-              <p className="text-gray-600 text-sm">Select the service that best fits your needs and transformation goals.</p>
-            </div>
-
-            <div className="text-center" data-aos="fade-up" data-aos-delay="300">
-              <div className="w-20 h-20 bg-accent-400 text-white rounded-full flex items-center justify-center text-2xl mx-auto mb-6 relative">
-                <i className="bi bi-play-circle"></i>
-                <span className="absolute -top-2 -right-2 w-8 h-8 bg-primary-500 text-white rounded-full flex items-center justify-center text-sm font-bold">3</span>
-              </div>
-              <h3 className="text-lg font-bold mb-3 text-primary-500">Start Journey</h3>
-              <p className="text-gray-600 text-sm">Begin your personalized program with guided sessions and expert support.</p>
-            </div>
-
-            <div className="text-center" data-aos="fade-up" data-aos-delay="400">
-              <div className="w-20 h-20 bg-accent-400 text-white rounded-full flex items-center justify-center text-2xl mx-auto mb-6 relative">
-                <i className="bi bi-trophy"></i>
-                <span className="absolute -top-2 -right-2 w-8 h-8 bg-primary-500 text-white rounded-full flex items-center justify-center text-sm font-bold">4</span>
-              </div>
-              <h3 className="text-lg font-bold mb-3 text-primary-500">Transform</h3>
-              <p className="text-gray-600 text-sm">Experience lasting change as you build sustainable habits and achieve your goals.</p>
-            </div>
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Testimonials Section */}
-      <section className="py-16">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16" data-aos="fade-up">
-            <h2 className="text-3xl font-bold mb-4 text-primary-500 font-raleway">What Our Clients Say</h2>
-            <p className="text-gray-600 text-lg">Real stories from people who transformed their lives</p>
-          </div>
+      <section className="py-20 bg-white">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            className="text-center mb-16"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+          >
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4 text-slate-700">
+              What Our Users Say
+            </h2>
+            <div className="w-20 h-1 bg-green-600 mx-auto rounded-full mb-4"></div>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              Hear from people who have transformed their lives with HabitUP
+            </p>
+          </motion.div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {testimonials.map((testimonial, index) => (
-              <div 
-                key={index} 
-                className="bg-white rounded-lg shadow-lg p-6 text-center"
-                data-aos="fade-up" 
-                data-aos-delay={100 + index * 100}
+              <motion.div
+                key={index}
+                className="bg-white rounded-xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 group"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                whileHover={{ y: -5 }}
               >
-                <img
-                  src={testimonial.image}
-                  alt={testimonial.name}
-                  className="w-20 h-20 rounded-full mx-auto mb-4 object-cover"
-                />
-                <div className="flex justify-center mb-4">
-                  {[...Array(testimonial.rating)].map((_, i) => (
-                    <i key={i} className="fas fa-star text-accent-400"></i>
-                  ))}
+                <div className="text-4xl text-green-600 mb-4">
+                  <i className="bi bi-quote"></i>
                 </div>
-                <p className="text-gray-600 italic mb-4 leading-relaxed">"{testimonial.quote}"</p>
-                <h4 className="font-bold text-primary-500">{testimonial.name}</h4>
-                <p className="text-gray-500 text-sm">{testimonial.role}</p>
-              </div>
+                <p className="text-gray-700 mb-6 leading-relaxed italic">
+                  "{testimonial.quote}"
+                </p>
+                <div className="flex items-center">
+                  <img
+                    src={testimonial.image}
+                    alt={testimonial.author}
+                    className="w-12 h-12 rounded-full mr-4 object-cover"
+                  />
+                  <div>
+                    <h5 className="font-semibold text-green-600 mb-0">
+                      {testimonial.author}
+                    </h5>
+                    <small className="text-gray-500">{testimonial.role}</small>
+                  </div>
+                </div>
+              </motion.div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Join Coaching Session Section */}
+      <section className="py-20 bg-gradient-to-br from-green-50 to-blue-50">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            className="text-center mb-12"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+          >
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4 text-slate-700">
+              Join Your Coaching Session
+            </h2>
+            <div className="w-20 h-1 bg-green-600 mx-auto rounded-full mb-4"></div>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              Enter your meeting link to connect with your mentor
+            </p>
+          </motion.div>
+
+          <div className="max-w-2xl mx-auto">
+            <motion.div
+              className="bg-white rounded-2xl p-8 shadow-xl border border-gray-200"
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+            >
+              <div className="text-center mb-8">
+                <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <i className="bi bi-camera-video text-3xl text-green-600"></i>
+                </div>
+                <h3 className="text-2xl font-bold text-slate-700 mb-2">
+                  Ready to Join?
+                </h3>
+                <p className="text-gray-600">
+                  Paste your meeting link below to start your coaching session
+                </p>
+              </div>
+
+              {/* Meeting Link Input */}
+              <div className="mb-6">
+                <label className="block text-sm font-semibold text-slate-700 mb-3">
+                  Meeting Link
+                </label>
+                <div className="relative">
+                  <input
+                    type="url"
+                    placeholder="https://meet.google.com/xxx-xxxx-xxx or https://zoom.us/j/xxxxxxxxx"
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-green-500 focus:outline-none transition-colors duration-300 pr-12"
+                  />
+                  <i className="bi bi-link-45deg absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                </div>
+                <p className="text-xs text-gray-500 mt-2">
+                  Your mentor will provide this link via email before the session
+                </p>
+              </div>
+
+              {/* Join Button */}
+              <motion.button
+                className="w-full bg-green-600 text-white py-4 px-6 rounded-lg font-semibold text-lg hover:bg-green-700 transition-colors duration-300 flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <i className="bi bi-box-arrow-up-right"></i>
+                <span>Join Session</span>
+              </motion.button>
+
+              {/* Session Info */}
+              <div className="mt-8 bg-gray-50 rounded-xl p-6">
+                <h4 className="text-lg font-semibold text-slate-700 mb-4 flex items-center">
+                  <i className="bi bi-info-circle text-green-600 mr-2"></i>
+                  Session Information
+                </h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                  <div className="flex items-center space-x-2">
+                    <i className="bi bi-clock text-gray-500"></i>
+                    <span className="text-gray-600">Duration: 45 minutes</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <i className="bi bi-person text-gray-500"></i>
+                    <span className="text-gray-600">1-on-1 Coaching</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <i className="bi bi-shield-check text-gray-500"></i>
+                    <span className="text-gray-600">Secure & Private</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <i className="bi bi-headset text-gray-500"></i>
+                    <span className="text-gray-600">Audio & Video</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Quick Tips */}
+              <div className="mt-6 bg-blue-50 rounded-xl p-6">
+                <h4 className="text-sm font-semibold text-slate-700 mb-3 flex items-center">
+                  <i className="bi bi-lightbulb text-blue-600 mr-2"></i>
+                  Quick Tips
+                </h4>
+                <ul className="text-sm text-gray-600 space-y-2">
+                  <li className="flex items-start space-x-2">
+                    <i className="bi bi-check2 text-blue-600 mt-0.5"></i>
+                    <span>Test your camera and microphone before joining</span>
+                  </li>
+                  <li className="flex items-start space-x-2">
+                    <i className="bi bi-check2 text-blue-600 mt-0.5"></i>
+                    <span>Find a quiet space with good lighting</span>
+                  </li>
+                  <li className="flex items-start space-x-2">
+                    <i className="bi bi-check2 text-blue-600 mt-0.5"></i>
+                    <span>Have a notebook ready for taking notes</span>
+                  </li>
+                </ul>
+              </div>
+            </motion.div>
           </div>
         </div>
       </section>
 
       {/* FAQ Section */}
-      <section className="py-16 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16" data-aos="fade-up">
-            <h2 className="text-3xl font-bold mb-4 text-primary-500 font-raleway">Frequently Asked Questions</h2>
-            <p className="text-gray-600 text-lg">Get answers to common questions about our services</p>
-          </div>
-
-          <div className="max-w-4xl mx-auto space-y-6">
-            <div className="bg-white rounded-lg shadow-lg p-6" data-aos="fade-up" data-aos-delay="100">
-              <h4 className="text-lg font-bold mb-3 text-primary-500">How long does it take to see results?</h4>
-              <p className="text-gray-600 leading-relaxed">
-                Most clients start noticing positive changes within the first 21 days. Significant transformation 
-                typically occurs within 90 days of consistent practice and engagement with our programs.
-              </p>
-            </div>
-
-            <div className="bg-white rounded-lg shadow-lg p-6" data-aos="fade-up" data-aos-delay="200">
-              <h4 className="text-lg font-bold mb-3 text-primary-500">Can I switch between different services?</h4>
-              <p className="text-gray-600 leading-relaxed">
-                Yes, you can upgrade or change your service plan at any time. Our team will help you transition 
-                smoothly and ensure you get the most value from your chosen program.
-              </p>
-            </div>
-
-            <div className="bg-white rounded-lg shadow-lg p-6" data-aos="fade-up" data-aos-delay="300">
-              <h4 className="text-lg font-bold mb-3 text-primary-500">Are the sessions recorded?</h4>
-              <p className="text-gray-600 leading-relaxed">
-                Our Kriya Yoga sessions are live and unrecorded to maintain the sacred nature of the practice. 
-                However, some educational content and guided meditations are available in our resource library.
-              </p>
-            </div>
-
-            <div className="bg-white rounded-lg shadow-lg p-6" data-aos="fade-up" data-aos-delay="400">
-              <h4 className="text-lg font-bold mb-3 text-primary-500">What if I'm not satisfied with the service?</h4>
-              <p className="text-gray-600 leading-relaxed">
-                We offer a 30-day money-back guarantee for all our services. If you're not completely satisfied, 
-                we'll refund your payment, no questions asked.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-16 bg-primary-500 text-white">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold mb-6 font-raleway" data-aos="fade-up">
-            Ready to Start Your Transformation?
-          </h2>
-          <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto" data-aos="fade-up" data-aos-delay="100">
-            Choose the service that resonates with you and begin your journey to lasting change today
-          </p>
-          <button 
-            className="bg-accent-400 text-primary-500 font-bold py-4 px-8 rounded-full transition-all duration-300 hover:bg-accent-500 hover:shadow-lg hover:scale-105"
-            data-aos="fade-up" 
-            data-aos-delay="200"
+      <section className="py-20 bg-gray-50">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            className="text-center mb-16"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
           >
-            Get Started Now
-          </button>
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4 text-slate-700">
+              Frequently Asked Questions
+            </h2>
+            <div className="w-20 h-1 bg-green-600 mx-auto rounded-full mb-4"></div>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              Find answers to common questions about our services
+            </p>
+          </motion.div>
+
+          <div className="max-w-4xl mx-auto">
+            {faqs.map((faq, index) => (
+              <motion.div
+                key={index}
+                className="mb-4"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+              >
+                <button
+                  className="w-full text-left p-6 bg-white rounded-lg hover:bg-gray-50 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-green-500 border-0 shadow-md"
+                  onClick={() => setOpenFaq(openFaq === index ? null : index)}
+                >
+                  <div className="flex justify-between items-center">
+                    <h3 className="text-lg font-semibold text-gray-900 pr-4">
+                      {faq.question}
+                    </h3>
+                    <i className={`bi bi-chevron-${openFaq === index ? 'up' : 'down'} text-green-600 transition-transform duration-300`}></i>
+                  </div>
+                </button>
+                {openFaq === index && (
+                  <motion.div
+                    className="px-6 pb-6 pt-2 bg-white rounded-b-lg"
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <p className="text-gray-600 leading-relaxed">
+                      {faq.answer}
+                    </p>
+                  </motion.div>
+                )}
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
     </div>
