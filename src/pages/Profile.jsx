@@ -58,7 +58,7 @@ const Profile = () => {
   ]
 
   return (
-    <div className="pt-20 min-h-screen bg-gray-50">
+    <div className="hero-section min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8">
         {/* Profile Header */}
         <div className="bg-white rounded-lg shadow-lg p-6 mb-8" data-aos="fade-up">

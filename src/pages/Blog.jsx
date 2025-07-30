@@ -99,9 +99,9 @@ const Blog = () => {
   ]
 
   return (
-    <div className="pt-16 sm:pt-20 bg-gray-50 min-h-screen">
+    <div className="hero-section bg-gray-50 min-h-screen">
       {/* Hero Section */}
-      <section className="relative py-24 bg-gradient-to-br from-indigo-600 via-purple-600 to-purple-700 text-white overflow-hidden">
+      <section className="relative py-24 bg-gradient-to-br from-indigo-600 via-purple-600 to-purple-700 text-white">
         <div className="absolute inset-0 bg-black/30"></div>
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <motion.div

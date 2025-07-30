@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useAuth } from '../contexts/AuthContext'
 import LoginModal from './LoginModal'
@@ -10,6 +10,7 @@ const Header = () => {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false)
   const location = useLocation()
+  const navigate = useNavigate()
   const profileDropdownRef = useRef(null)
 
   const isLoggedIn = isAuthenticated
@@ -20,6 +21,12 @@ const Header = () => {
 
   const isActive = (path) => {
     return location.pathname === path
+  }
+
+  // Get navbar color to match footer exactly
+  const getNavbarColor = () => {
+    // Match footer color exactly - solid primary-500 with slight transparency
+    return 'bg-primary-500/90 backdrop-blur-sm'
   }
 
   // Prevent body scroll when mobile menu is open
@@ -136,7 +143,7 @@ const Header = () => {
 
   return (
     <>
-      <header className="header-fixed bg-primary-500/95 backdrop-blur-md transition-all duration-500 border-b border-white/10 overflow-visible">
+      <header className={`header-fixed ${getNavbarColor()} backdrop-blur-md transition-all duration-500 border-b border-white/10 overflow-visible`}>
         <div className="header-container container mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between py-3 sm:py-4 relative">
           {/* Logo */}
           <motion.div
@@ -239,7 +246,7 @@ const Header = () => {
                 { path: '/user-home', label: 'Home', altPath: '/dashboard' },
                 { path: '/about', label: 'About' },
                 { path: '/services', label: 'Services' },
-                { path: '/blog', label: 'Blog' },
+                { path: '/blog', label: 'Blogs' },
                 { path: '/upcoming', label: 'Upcoming' }
               ] : [
                 { path: '/', label: 'Home', altPath: '/home' },
@@ -254,15 +261,31 @@ const Header = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                 >
-                  <Link
-                    to={item.path}
-                    className={`block px-3 py-2 rounded transition-colors duration-300 font-poppins text-sm lg:text-base ${isActive(item.path) || (item.altPath && isActive(item.altPath))
-                      ? 'text-accent-400'
-                      : 'text-white hover:text-accent-400'
+                  {item.label === 'Services' && (location.pathname === '/' || location.pathname === '/home') ? (
+                    <button
+                      onClick={() => {
+                        const servicesSection = document.getElementById('services')
+                        if (servicesSection) {
+                          servicesSection.scrollIntoView({ behavior: 'smooth' })
+                        }
+                      }}
+                      className={`block px-3 py-2 rounded transition-colors duration-300 font-poppins text-sm lg:text-base ${
+                        'text-white hover:text-accent-400'
                       }`}
-                  >
-                    {item.label}
-                  </Link>
+                    >
+                      {item.label}
+                    </button>
+                  ) : (
+                    <Link
+                      to={item.path}
+                      className={`block px-3 py-2 rounded transition-colors duration-300 font-poppins text-sm lg:text-base ${isActive(item.path) || (item.altPath && isActive(item.altPath))
+                        ? 'text-accent-400'
+                        : 'text-white hover:text-accent-400'
+                        }`}
+                    >
+                      {item.label}
+                    </Link>
+                  )}
                 </motion.li>
               ))}
             </ul>
@@ -337,7 +360,7 @@ const Header = () => {
                 whileTap={{ scale: 0.95 }}
               >
                 <i className="bi bi-box-arrow-in-right mr-2"></i>
-                <span className="hidden lg:inline">Login / Sign Up</span>
+                <span className="hidden lg:inline">Login / Signup</span>
                 <span className="lg:hidden">Login</span>
               </motion.button>
             )}
@@ -367,7 +390,17 @@ const Header = () => {
             
             {/* Sidebar Menu Panel - 45% Width */}
             <motion.div
-              className="absolute top-0 right-0 h-full w-[45%] min-w-[280px] max-w-[400px] bg-gradient-to-br from-primary-500 via-primary-600 to-primary-700 shadow-2xl"
+              className={`absolute top-0 right-0 h-full w-[45%] min-w-[280px] max-w-[400px] shadow-2xl ${
+                isLoggedIn && user?.userType 
+                  ? user.userType === 'Child' 
+                    ? 'bg-gradient-to-br from-pink-500 via-pink-600 to-purple-700'
+                    : user.userType === 'Elder'
+                    ? 'bg-gradient-to-br from-green-500 via-green-600 to-teal-700'
+                    : user.userType === 'Doctor'
+                    ? 'bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-700'
+                    : 'bg-gradient-to-br from-primary-500 via-primary-600 to-blue-700'
+                  : 'bg-gradient-to-br from-primary-500 via-primary-600 to-primary-700'
+              }`}
               variants={menuVariants}
               initial="closed"
               animate="open"
@@ -434,17 +467,36 @@ const Header = () => {
                       { path: '/contact', label: 'Contact', icon: 'bi bi-envelope' }
                     ]).map((item) => (
                       <motion.li key={item.path} variants={menuItemVariants}>
-                        <Link
-                          to={item.path}
-                          className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-300 group ${isActive(item.path) || (item.altPath && isActive(item.altPath))
-                            ? 'bg-accent-400 text-primary-500 shadow-lg'
-                            : 'text-white hover:bg-white/10 hover:text-accent-400'
+                        {item.label === 'Services' && (location.pathname === '/' || location.pathname === '/home') ? (
+                          <button
+                            onClick={() => {
+                              const servicesSection = document.getElementById('services')
+                              if (servicesSection) {
+                                servicesSection.scrollIntoView({ behavior: 'smooth' })
+                              }
+                              setIsMenuOpen(false)
+                            }}
+                            className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-300 w-full text-left group ${
+                              'text-white hover:text-accent-400 hover:bg-white/10 hover:shadow-lg'
                             }`}
-                          onClick={() => setIsMenuOpen(false)}
-                        >
-                          <i className={`${item.icon} text-lg group-hover:scale-110 transition-transform`}></i>
-                          <span className="font-semibold text-base">{item.label}</span>
-                        </Link>
+                          >
+                            <i className={`${item.icon} text-lg group-hover:scale-110 transition-transform`}></i>
+                            <span className="font-semibold text-base">{item.label}</span>
+                          </button>
+                        ) : (
+                          <Link
+                            to={item.path}
+                            className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-300 w-full text-left group ${
+                              isActive(item.path) || (item.altPath && isActive(item.altPath))
+                                ? 'bg-accent-400 text-primary-500 shadow-lg'
+                                : 'text-white hover:text-accent-400 hover:bg-white/10 hover:shadow-lg'
+                            }`}
+                            onClick={() => setIsMenuOpen(false)}
+                          >
+                            <i className={`${item.icon} text-lg group-hover:scale-110 transition-transform`}></i>
+                            <span className="font-semibold text-base">{item.label}</span>
+                          </Link>
+                        )}
                       </motion.li>
                     ))}
                   </ul>

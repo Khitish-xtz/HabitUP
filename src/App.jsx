@@ -23,6 +23,7 @@ import Upcoming from './pages/Upcoming'
 import InstructorApplication from './components/InstructorApplication'
 import MentorContact from './components/MentorContact'
 import MeetingManagement from './components/MeetingManagement'
+import CoachApplication from './pages/CoachApplication'
 import './App.css'
 
 function App() {
@@ -155,6 +156,11 @@ function App() {
                   
                   {/* New component routes */}
                   <Route path="/instructor-application" element={<InstructorApplication />} />
+                  <Route path="/coach-application" element={
+                    <ProtectedRoute>
+                      <CoachApplication />
+                    </ProtectedRoute>
+                  } />
                   <Route path="/mentor-contact" element={<MentorContact />} />
                   <Route path="/meetings" element={
                     <ProtectedRoute>

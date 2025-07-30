@@ -58,25 +58,7 @@
   transform: translateY(-5px);
 }
 
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: #f1f1f1;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #888;
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #555;
-}
-
-/* Global overflow fixes */
+/* Global overflow fixes - simplified */
 html, body {
   overflow-x: hidden;
   max-width: 100vw;
@@ -142,16 +124,6 @@ html, body {
 .mobile-floating-actions {
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-}
-
-/* Prevent horizontal overflow on all elements */
-* {
-  max-width: 100%;
-}
-
-/* Container overflow fixes */
-.container {
-  overflow-x: hidden;
 }
 
 /* Image overflow fixes */

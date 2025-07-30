@@ -18,10 +18,12 @@ const AdminDashboard = () => {
   const location = useLocation()
   const navigate = useNavigate()
   const [activeSection, setActiveSection] = useState('dashboard')
-  const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth > 768)
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768)
   const [adminData, setAdminData] = useState(null)
   const [isDemoMode, setIsDemoMode] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+  const [loadingProgress, setLoadingProgress] = useState(0)
 
   // Map URL paths to sections
   const pathToSection = {
@@ -44,26 +46,55 @@ const AdminDashboard = () => {
     setActiveSection(section)
   }, [location.pathname])
 
+  // Handle window resize for mobile responsiveness
   useEffect(() => {
-    // Check if user is logged in as admin
-    const adminToken = localStorage.getItem('adminToken')
-    const adminName = localStorage.getItem('adminName')
-    const adminEmail = localStorage.getItem('adminEmail')
-    const isDemoAdmin = localStorage.getItem('isDemoAdmin') === 'true'
-
-    if (!adminToken) {
-      // Redirect to home if not logged in
-      navigate('/')
-      return
+    const handleResize = () => {
+      const mobile = window.innerWidth <= 768
+      setIsMobile(mobile)
+      setSidebarOpen(!mobile)
     }
 
-    setAdminData({
-      name: adminName || 'Admin',
-      email: adminEmail || 'admin@habitup.com',
-      token: adminToken
-    })
-    setIsDemoMode(isDemoAdmin)
-    setIsLoading(false)
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
+  useEffect(() => {
+    // Enhanced loading with progress simulation
+    const loadAdmin = async () => {
+      setLoadingProgress(20)
+      
+      // Check if user is logged in as admin
+      const adminToken = localStorage.getItem('adminToken')
+      const adminName = localStorage.getItem('adminName')
+      const adminEmail = localStorage.getItem('adminEmail')
+      const isDemoAdmin = localStorage.getItem('isDemoAdmin') === 'true'
+
+      setLoadingProgress(50)
+
+      if (!adminToken) {
+        // Redirect to home if not logged in
+        navigate('/')
+        return
+      }
+
+      setLoadingProgress(80)
+
+      // Simulate loading time for better UX
+      await new Promise(resolve => setTimeout(resolve, 500))
+
+      setAdminData({
+        name: adminName || 'Admin',
+        email: adminEmail || 'admin@habitup.com',
+        token: adminToken
+      })
+      setIsDemoMode(isDemoAdmin)
+      setLoadingProgress(100)
+      
+      // Small delay before hiding loading
+      setTimeout(() => setIsLoading(false), 200)
+    }
+
+    loadAdmin()
   }, [navigate])
 
   // Handle URL-based routing
@@ -151,10 +182,34 @@ const AdminDashboard = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-8 h-8 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading admin dashboard...</p>
+      <div className="min-h-screen bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-700 flex items-center justify-center overflow-hidden">
+        <div className="text-center p-8">
+          {/* Enhanced Loading Animation */}
+          <div className="relative mb-8">
+            <div className="w-20 h-20 border-4 border-white/20 rounded-full mx-auto"></div>
+            <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-20 h-20 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+          </div>
+          
+          {/* Loading Text */}
+          <h2 className="text-2xl font-bold text-white mb-4">Loading Admin Dashboard</h2>
+          <p className="text-white/80 mb-6">Preparing your administrative interface...</p>
+          
+          {/* Progress Bar */}
+          <div className="w-64 bg-white/20 rounded-full h-2 mx-auto mb-4">
+            <div 
+              className="bg-white h-2 rounded-full transition-all duration-300 ease-out"
+              style={{ width: `${loadingProgress}%` }}
+            ></div>
+          </div>
+          
+          {/* Progress Text */}
+          <p className="text-white/60 text-sm">{loadingProgress}% Complete</p>
+          
+          {/* Floating Elements */}
+          <div className="absolute top-10 left-10 w-4 h-4 bg-white/10 rounded-full animate-pulse"></div>
+          <div className="absolute top-20 right-20 w-6 h-6 bg-white/10 rounded-full animate-pulse" style={{ animationDelay: '1s' }}></div>
+          <div className="absolute bottom-20 left-20 w-3 h-3 bg-white/10 rounded-full animate-pulse" style={{ animationDelay: '2s' }}></div>
+          <div className="absolute bottom-10 right-10 w-5 h-5 bg-white/10 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }}></div>
         </div>
       </div>
     )
@@ -162,27 +217,49 @@ const AdminDashboard = () => {
 
   return (
     <div className="admin-dashboard min-h-screen bg-gray-100 flex" style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>
+      {/* Mobile Overlay */}
+      {isMobile && sidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
       {/* Sidebar */}
       <AdminSidebar
         activeSection={activeSection}
         setActiveSection={handleSectionChange}
         sidebarOpen={sidebarOpen}
         setSidebarOpen={setSidebarOpen}
+        isMobile={isMobile}
       />
 
       {/* Main Content */}
-      <div className={`flex-1 transition-all duration-300 ${sidebarOpen ? 'ml-64' : 'ml-16'}`}>
+      <div className={`flex-1 transition-all duration-300 ${
+        isMobile 
+          ? 'ml-0' 
+          : sidebarOpen 
+            ? 'ml-64' 
+            : 'ml-16'
+      }`}>
         {/* Top Navigation */}
         <AdminTopNav
           adminData={adminData}
           isDemoMode={isDemoMode}
           onLogout={handleLogout}
+          sidebarOpen={sidebarOpen}
+          setSidebarOpen={setSidebarOpen}
+          isMobile={isMobile}
         />
 
         {/* Dashboard Content */}
-        <main className="p-6">
+        <main className={`${
+          isMobile ? 'p-4' : 'p-6'
+        }`} style={{ minHeight: 'calc(100vh - 64px)' }}>
           <AdminBreadcrumb />
-          {renderContent()}
+          <div className="max-w-full">
+            {renderContent()}
+          </div>
         </main>
       </div>
     </div>

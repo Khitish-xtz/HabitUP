@@ -98,7 +98,7 @@ const Contact = () => {
   }
 
   return (
-    <div className="pt-16 sm:pt-20">
+    <div className="hero-section">
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-primary-500 via-primary-600 to-primary-700 text-white py-16 sm:py-20 lg:py-24">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -176,7 +176,7 @@ const Contact = () => {
               className="bg-gray-50 rounded-2xl p-8 shadow-lg"
             >
               <h2 className="text-2xl sm:text-3xl font-bold text-primary-500 mb-6 font-raleway">
-                Send us a Message
+                Contact Form
               </h2>
               
               <form onSubmit={handleSubmit} className="space-y-6">

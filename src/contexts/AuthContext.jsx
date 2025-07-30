@@ -165,6 +165,8 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [loginLoading, setLoginLoading] = useState(false)
+  const [loginProgress, setLoginProgress] = useState(0)
 
   // Check if user is authenticated on app load
   useEffect(() => {
@@ -204,17 +206,25 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (credentials) => {
     try {
-      setIsLoading(true)
+      setLoginLoading(true)
+      setLoginProgress(0)
       
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      // Enhanced loading simulation with progress
+      setLoginProgress(20)
+      await new Promise(resolve => setTimeout(resolve, 300))
       
+      setLoginProgress(40)
       // Find user in mock data
       const foundUser = mockUsers.find(
         u => u.email === credentials.email && u.password === credentials.password
       )
       
+      setLoginProgress(60)
+      await new Promise(resolve => setTimeout(resolve, 300))
+      
       if (foundUser) {
+        setLoginProgress(80)
+        
         // Automatically determine user type based on age and role
         const calculatedUserType = determineUserType(foundUser.dateOfBirth, foundUser.role)
         
@@ -226,6 +236,8 @@ export const AuthProvider = ({ children }) => {
         
         // Create mock token
         const token = `mock_token_${foundUser.id}_${Date.now()}`
+        
+        setLoginProgress(90)
         
         // Store in localStorage (matching HTML structure)
         localStorage.setItem('token', token)
@@ -243,14 +255,18 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem('joinDate', foundUser.joinDate)
         localStorage.setItem('userId', foundUser.id.toString())
         
+        setLoginProgress(100)
+        await new Promise(resolve => setTimeout(resolve, 200))
+        
         // Update state
         setUser(userWithCalculatedType)
         setIsAuthenticated(true)
         
         console.log('Login successful, user authenticated:', foundUser)
         
-        return { success: true, user: foundUser }
+        return { success: true, user: userWithCalculatedType }
       } else {
+        setLoginProgress(100)
         return { success: false, message: 'Invalid email or password' }
       }
     } catch (error) {
@@ -260,7 +276,8 @@ export const AuthProvider = ({ children }) => {
         message: 'Login failed. Please try again.' 
       }
     } finally {
-      setIsLoading(false)
+      setLoginLoading(false)
+      setLoginProgress(0)
     }
   }
 
@@ -445,11 +462,56 @@ export const AuthProvider = ({ children }) => {
     }
   }
 
+  // Admin login functionality
+  const adminLogin = async (credentials) => {
+    try {
+      setLoginLoading(true)
+      setLoginProgress(0)
+      
+      // Enhanced loading simulation with progress
+      setLoginProgress(30)
+      await new Promise(resolve => setTimeout(resolve, 400))
+      
+      // Check admin credentials
+      if (credentials.email === 'superuser@habitup.com' && credentials.password === 'SuperUser@2024!') {
+        setLoginProgress(70)
+        await new Promise(resolve => setTimeout(resolve, 300))
+        
+        // Store admin data
+        localStorage.setItem('adminToken', `admin_token_${Date.now()}`)
+        localStorage.setItem('adminName', 'Super Admin')
+        localStorage.setItem('adminEmail', 'superuser@habitup.com')
+        localStorage.setItem('adminRole', 'superuser')
+        localStorage.setItem('isDemoAdmin', 'false')
+        
+        setLoginProgress(100)
+        await new Promise(resolve => setTimeout(resolve, 200))
+        
+        return { success: true, isAdmin: true }
+      } else {
+        setLoginProgress(100)
+        return { success: false, message: 'Invalid admin credentials' }
+      }
+    } catch (error) {
+      console.error('Admin login failed:', error)
+      return { 
+        success: false, 
+        message: 'Admin login failed. Please try again.' 
+      }
+    } finally {
+      setLoginLoading(false)
+      setLoginProgress(0)
+    }
+  }
+
   const value = {
     user,
     isAuthenticated,
     isLoading,
+    loginLoading,
+    loginProgress,
     login,
+    adminLogin,
     register,
     logout,
     updateProfile,

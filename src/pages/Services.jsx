@@ -173,7 +173,7 @@ const Services = () => {
 
 
       {/* Hero Section */}
-      <section className="relative py-24 bg-gradient-to-br from-slate-700 via-slate-800 to-slate-900 text-white overflow-hidden">
+      <section className="relative py-24 bg-gradient-to-br from-slate-700 via-slate-800 to-slate-900 text-white">
         <div className="absolute inset-0 bg-black/30"></div>
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <motion.div

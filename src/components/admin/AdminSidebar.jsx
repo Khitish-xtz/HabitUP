@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 
-const AdminSidebar = ({ activeSection, setActiveSection, sidebarOpen, setSidebarOpen }) => {
+const AdminSidebar = ({ activeSection, setActiveSection, sidebarOpen, setSidebarOpen, isMobile }) => {
   const navigate = useNavigate()
   const menuItems = [
     {
@@ -40,16 +40,22 @@ const AdminSidebar = ({ activeSection, setActiveSection, sidebarOpen, setSidebar
   const handleNavigation = (item) => {
     setActiveSection(item.id)
     navigate(item.path)
+    // Close sidebar on mobile after navigation
+    if (isMobile) {
+      setSidebarOpen(false)
+    }
   }
 
   return (
     <motion.div
-      className={`fixed left-0 top-0 h-full bg-gradient-to-b from-purple-600 to-blue-600 text-white transition-all duration-300 z-50 ${
-        sidebarOpen ? 'w-64' : 'w-16'
+      className={`fixed left-0 top-0 h-full bg-gradient-to-b from-purple-600 to-blue-600 text-white transition-all duration-300 ${
+        isMobile 
+          ? `z-50 ${sidebarOpen ? 'w-64' : 'w-0 overflow-hidden'}` 
+          : `z-40 ${sidebarOpen ? 'w-64' : 'w-16'}`
       }`}
-      initial={{ x: -280 }}
-      animate={{ x: 0 }}
-      transition={{ duration: 0.4 }}
+      initial={{ x: isMobile ? -280 : -280 }}
+      animate={{ x: isMobile ? (sidebarOpen ? 0 : -280) : 0 }}
+      transition={{ duration: 0.4, type: "spring", stiffness: 300, damping: 30 }}
     >
       {/* Sidebar Header */}
       <div className="p-4">

@@ -13,7 +13,7 @@ const Sashi = () => {
   }, [])
 
   return (
-    <div className="pt-20 min-h-screen bg-gray-50">
+    <div className="hero-section min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-2xl mx-auto">
           <div className="bg-white rounded-2xl shadow-lg p-8" data-aos="fade-up">

@@ -2,12 +2,15 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
+import LoadingScreen from './LoadingScreen'
 
 const LoginModal = ({ isOpen, onClose }) => {
-  const { login, register, isLoading } = useAuth()
+  const { login, register, adminLogin, loginLoading, loginProgress } = useAuth()
   const navigate = useNavigate()
   const [isLogin, setIsLogin] = useState(true)
+  const [isAdminLogin, setIsAdminLogin] = useState(false)
   const [message, setMessage] = useState('')
+  const [userTypeForLoading, setUserTypeForLoading] = useState('Adult')
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -53,30 +56,50 @@ const LoginModal = ({ isOpen, onClose }) => {
     setMessage('')
 
     if (isLogin) {
-      // Handle login
-      const result = await login({
-        email: formData.email,
-        password: formData.password
-      })
+      // Check if it's admin login
+      if (formData.email === 'superuser@habitup.com' || isAdminLogin) {
+        setUserTypeForLoading('Admin')
+        const result = await adminLogin({
+          email: formData.email,
+          password: formData.password
+        })
 
-      if (result.success) {
-        setMessage('✅ Login successful!')
-        console.log('Login result:', result)
-        setTimeout(() => {
-          onClose()
-          // Redirect based on user type
-          const userType = result.user.userType || result.user.role
-          console.log('Redirecting user type:', userType)
-          if (userType === 'Doctor') {
-            console.log('Navigating to /services')
-            navigate('/services') // Doctor goes to services page
-          } else {
-            console.log('Navigating to /user-home')
-            navigate('/user-home') // Others go to user home
-          }
-        }, 1000)
+        if (result.success) {
+          setMessage('✅ Admin login successful!')
+          setTimeout(() => {
+            onClose()
+            navigate('/admin-dashboard')
+          }, 1000)
+        } else {
+          setMessage(`❌ ${result.message}`)
+        }
       } else {
-        setMessage(`❌ ${result.message}`)
+        // Handle regular user login
+        const result = await login({
+          email: formData.email,
+          password: formData.password
+        })
+
+        if (result.success) {
+          setUserTypeForLoading(result.user.userType || 'Adult')
+          setMessage('✅ Login successful!')
+          console.log('Login result:', result)
+          setTimeout(() => {
+            onClose()
+            // Redirect based on user type
+            const userType = result.user.userType || result.user.role
+            console.log('Redirecting user type:', userType)
+            if (userType === 'Doctor') {
+              console.log('Navigating to /services')
+              navigate('/services') // Doctor goes to services page
+            } else {
+              console.log('Navigating to /user-home')
+              navigate('/user-home') // Others go to user home
+            }
+          }, 1000)
+        } else {
+          setMessage(`❌ ${result.message}`)
+        }
       }
     } else {
       // Handle registration
@@ -207,8 +230,18 @@ const LoginModal = ({ isOpen, onClose }) => {
   }
 
   return (
-    <AnimatePresence>
-      {isOpen && (
+    <>
+      {/* Loading Screen */}
+      <LoadingScreen
+        isVisible={loginLoading}
+        progress={loginProgress}
+        title={isAdminLogin || formData.email === 'superuser@habitup.com' ? "Admin Login" : "Logging In"}
+        subtitle={isAdminLogin || formData.email === 'superuser@habitup.com' ? "Accessing admin dashboard..." : "Welcome back! Preparing your personalized experience..."}
+        userType={userTypeForLoading}
+      />
+
+      <AnimatePresence>
+        {isOpen && (
         <motion.div
           className="fixed inset-0 z-[99999] flex items-center justify-center p-4"
           variants={overlayVariants}
@@ -320,11 +353,37 @@ const LoginModal = ({ isOpen, onClose }) => {
                     Use any of these test accounts or create a new one
                   </p>
                   <div className="text-xs text-white/60 mt-2">
-                    <p>Adult: user@habitup.com / password123</p>
+                    <p>Adult: adult@habitup.com / password123</p>
                     <p>Child: child@habitup.com / password123</p>
                     <p>Elder: elder@habitup.com / password123</p>
                     <p>Doctor: doctor@habitup.com / password123</p>
+                    <p className="text-purple-300 font-semibold">Admin: superuser@habitup.com / SuperUser@2024!</p>
                   </div>
+                  
+                  {/* Admin Login Toggle */}
+                  <motion.div
+                    className="mt-3 flex items-center justify-center"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 }}
+                  >
+                    <label className="flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={isAdminLogin}
+                        onChange={(e) => setIsAdminLogin(e.target.checked)}
+                        className="sr-only"
+                      />
+                      <div className={`relative w-10 h-6 rounded-full transition-colors ${
+                        isAdminLogin ? 'bg-purple-500' : 'bg-white/20'
+                      }`}>
+                        <div className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform ${
+                          isAdminLogin ? 'translate-x-4' : 'translate-x-0'
+                        }`}></div>
+                      </div>
+                      <span className="ml-2 text-white/70 text-xs">Admin Login</span>
+                    </label>
+                  </motion.div>
                 </motion.div>
               )}
 
@@ -382,17 +441,17 @@ const LoginModal = ({ isOpen, onClose }) => {
 
                       <motion.button
                         type="submit"
-                        disabled={isLoading}
+                        disabled={loginLoading}
                         className="btn btn-primary d-block mx-auto bg-gradient-to-r from-accent-400 to-accent-500 text-primary-500 font-bold py-3 px-8 rounded-full transition-all duration-300 hover:shadow-lg text-sm disabled:opacity-50"
                         style={{ width: '30%' }}
                         whileHover={{
-                          scale: isLoading ? 1 : 1.05,
-                          boxShadow: isLoading ? "none" : "0 10px 25px rgba(253, 193, 52, 0.3)"
+                          scale: loginLoading ? 1 : 1.05,
+                          boxShadow: loginLoading ? "none" : "0 10px 25px rgba(253, 193, 52, 0.3)"
                         }}
-                        whileTap={{ scale: isLoading ? 1 : 0.95 }}
+                        whileTap={{ scale: loginLoading ? 1 : 0.95 }}
                         transition={{ type: "spring", stiffness: 400, damping: 17 }}
                       >
-                        {isLoading ? 'Logging in...' : 'Login'}
+                        {loginLoading ? 'Logging in...' : 'Login'}
                       </motion.button>
 
                       <div className="text-center mt-3">
@@ -582,16 +641,16 @@ const LoginModal = ({ isOpen, onClose }) => {
                       <motion.div variants={inputVariants} className="md:col-span-2 text-center mt-2">
                         <motion.button
                           type="submit"
-                          disabled={isLoading}
+                          disabled={loginLoading}
                           className="btn btn-primary w-auto px-6 bg-gradient-to-r from-accent-400 to-accent-500 text-primary-500 font-bold py-3 rounded-full transition-all duration-300 hover:shadow-lg text-sm disabled:opacity-50"
                           whileHover={{
-                            scale: isLoading ? 1 : 1.05,
-                            boxShadow: isLoading ? "none" : "0 10px 25px rgba(253, 193, 52, 0.3)"
+                            scale: loginLoading ? 1 : 1.05,
+                            boxShadow: loginLoading ? "none" : "0 10px 25px rgba(253, 193, 52, 0.3)"
                           }}
-                          whileTap={{ scale: isLoading ? 1 : 0.95 }}
+                          whileTap={{ scale: loginLoading ? 1 : 0.95 }}
                           transition={{ type: "spring", stiffness: 400, damping: 17 }}
                         >
-                          {isLoading ? 'Registering...' : 'Register'}
+                          {loginLoading ? 'Registering...' : 'Register'}
                         </motion.button>
                         
                         <div className="mt-3">
@@ -613,8 +672,9 @@ const LoginModal = ({ isOpen, onClose }) => {
             </div>
           </motion.div>
         </motion.div>
-      )}
-    </AnimatePresence>
+        )}
+      </AnimatePresence>
+    </>
   )
 }
 

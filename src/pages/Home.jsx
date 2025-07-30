@@ -14,7 +14,7 @@ const Home = () => {
   const aboutRef = useRef(null)
   const servicesRef = useRef(null)
   const featuresRef = useRef(null)
-  
+
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)
   const [adminLoginData, setAdminLoginData] = useState({
     email: '',
@@ -68,11 +68,11 @@ const Home = () => {
 
     try {
       setAdminLoginMessage('<div class="text-white text-sm">Logging in...</div>')
-      
+
       // Check for super user credentials first
       if (email === superUserCredentials.email && password === superUserCredentials.password) {
         console.log('Super user login successful')
-        
+
         // Super user login success
         const superUserData = {
           token: 'superuser-token-' + Date.now(),
@@ -98,13 +98,13 @@ const Home = () => {
         })
 
         setAdminLoginMessage('<div class="text-green-400 text-sm">Super user login successful! Redirecting...</div>')
-        
+
         // Redirect to admin dashboard
         setTimeout(() => {
           console.log('Navigating to /admin/dashboard')
           navigate('/admin/dashboard')
         }, 1000)
-        
+
         setIsAdminLoading(false)
         return
       }
@@ -132,7 +132,7 @@ const Home = () => {
       localStorage.removeItem('isDemoAdmin')
 
       setAdminLoginMessage('<div class="text-green-400 text-sm">Login successful! Redirecting...</div>')
-      
+
       // Redirect to admin dashboard
       setTimeout(() => {
         navigate('/admin/dashboard')
@@ -252,7 +252,7 @@ const Home = () => {
   ]
 
   return (
-    <div className="pt-16 sm:pt-20 relative">
+    <div className="hero-section relative">
       {/* Scroll Progress Indicator */}
       <motion.div
         className="fixed top-0 left-0 right-0 h-1 bg-accent-400 z-50 origin-left"
@@ -278,20 +278,20 @@ const Home = () => {
       {/* Hero Section */}
       <motion.section
         ref={heroRef}
-        className="min-h-[80vh] sm:min-h-[90vh] bg-primary-500 text-white flex items-center py-12 sm:py-20 lg:py-28 relative overflow-hidden"
+        className="min-h-[80vh] sm:min-h-[90vh] bg-primary-500 text-white flex items-center py-12 sm:py-20 lg:py-28 relative"
         style={{ y: heroY, opacity: heroOpacity }}
       >
         {/* Background Pattern with Logos */}
         <div className="absolute inset-0 opacity-15">
           {/* Large bubble with logo */}
-          <motion.div 
+          <motion.div
             className="absolute top-10 left-10 w-20 h-20 border-2 border-accent-400 rounded-full flex items-center justify-center bg-accent-400/10"
-            animate={{ 
+            animate={{
               rotate: [0, 360],
               scale: [1, 1.1, 1],
               y: [0, -10, 0]
             }}
-            transition={{ 
+            transition={{
               duration: 20,
               repeat: Infinity,
               ease: "linear"
@@ -302,15 +302,15 @@ const Home = () => {
               <i className="fas fa-bullseye text-accent-400 text-lg"></i>
             </div>
           </motion.div>
-          
+
           {/* Medium bubble with logo */}
-          <motion.div 
+          <motion.div
             className="absolute top-32 right-20 w-16 h-16 border-2 border-accent-400 rounded-full flex items-center justify-center bg-accent-400/10"
-            animate={{ 
+            animate={{
               rotate: [360, 0],
               y: [0, -15, 0]
             }}
-            transition={{ 
+            transition={{
               duration: 15,
               repeat: Infinity,
               ease: "easeInOut"
@@ -321,16 +321,16 @@ const Home = () => {
               <i className="fas fa-star text-accent-400 text-sm"></i>
             </div>
           </motion.div>
-          
+
           {/* Small bubble with logo */}
-          <motion.div 
+          <motion.div
             className="absolute bottom-20 left-32 w-12 h-12 border-2 border-accent-400 rounded-full flex items-center justify-center bg-accent-400/10"
-            animate={{ 
+            animate={{
               scale: [1, 1.2, 1],
               rotate: [0, 180, 360],
               y: [0, -8, 0]
             }}
-            transition={{ 
+            transition={{
               duration: 12,
               repeat: Infinity,
               ease: "easeInOut"
@@ -341,16 +341,16 @@ const Home = () => {
               <i className="fas fa-heart text-accent-400 text-xs"></i>
             </div>
           </motion.div>
-          
+
           {/* Additional decorative bubbles */}
-          <motion.div 
+          <motion.div
             className="absolute top-1/2 right-10 w-8 h-8 border border-accent-400 rounded-full flex items-center justify-center bg-accent-400/5"
-            animate={{ 
+            animate={{
               x: [0, 10, 0],
               y: [0, -5, 0],
               opacity: [0.3, 0.7, 0.3]
             }}
-            transition={{ 
+            transition={{
               duration: 8,
               repeat: Infinity,
               ease: "easeInOut"
@@ -361,14 +361,14 @@ const Home = () => {
               <i className="fas fa-plus text-accent-400" style={{ fontSize: '8px' }}></i>
             </div>
           </motion.div>
-          
-          <motion.div 
+
+          <motion.div
             className="absolute bottom-32 right-32 w-10 h-10 border border-accent-400 rounded-full flex items-center justify-center bg-accent-400/5"
-            animate={{ 
+            animate={{
               y: [0, -20, 0],
               rotate: [0, 90, 180, 270, 360]
             }}
-            transition={{ 
+            transition={{
               duration: 18,
               repeat: Infinity,
               ease: "linear"
@@ -379,16 +379,16 @@ const Home = () => {
               <i className="fas fa-rocket text-accent-400 text-xs"></i>
             </div>
           </motion.div>
-          
+
           {/* HabitUP Logo Bubbles */}
-          <motion.div 
+          <motion.div
             className="absolute top-1/4 left-1/4 w-14 h-14 border border-accent-400 rounded-full flex items-center justify-center bg-accent-400/8"
-            animate={{ 
+            animate={{
               rotate: [0, -360],
               scale: [1, 1.15, 1],
               y: [0, -12, 0]
             }}
-            transition={{ 
+            transition={{
               duration: 25,
               repeat: Infinity,
               ease: "linear"
@@ -399,15 +399,15 @@ const Home = () => {
               <span className="text-accent-400 font-bold text-xs">H</span>
             </div>
           </motion.div>
-          
-          <motion.div 
+
+          <motion.div
             className="absolute bottom-1/4 right-1/4 w-6 h-6 border border-accent-400 rounded-full flex items-center justify-center bg-accent-400/8"
-            animate={{ 
+            animate={{
               x: [0, 8, 0],
               y: [0, -12, 0],
               opacity: [0.4, 0.8, 0.4]
             }}
-            transition={{ 
+            transition={{
               duration: 10,
               repeat: Infinity,
               ease: "easeInOut"
@@ -918,7 +918,7 @@ const Home = () => {
                 <h3 className="text-xl sm:text-2xl font-bold text-center mb-6 text-accent-400">
                   Admin Login
                 </h3>
-                
+
                 {/* Demo Credentials Display */}
                 <motion.div
                   className="bg-accent-400/20 border border-accent-400/30 rounded-lg p-4 mb-6"
@@ -997,7 +997,7 @@ const Home = () => {
                     />
                   </div>
                   {adminLoginMessage && (
-                    <div 
+                    <div
                       className="text-center text-sm"
                       dangerouslySetInnerHTML={{ __html: adminLoginMessage }}
                     />
@@ -1101,9 +1101,9 @@ const Home = () => {
       </motion.button>
 
       {/* Login Modal */}
-      <LoginModal 
-        isOpen={isLoginModalOpen} 
-        onClose={() => setIsLoginModalOpen(false)} 
+      <LoginModal
+        isOpen={isLoginModalOpen}
+        onClose={() => setIsLoginModalOpen(false)}
       />
     </div>
   )
