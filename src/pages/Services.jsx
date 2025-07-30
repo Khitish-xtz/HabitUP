@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { useAuth } from '../contexts/AuthContext'
+import VideoMeeting from '../components/VideoMeeting'
 import AOS from 'aos'
 import 'aos/dist/aos.css'
 
@@ -15,10 +16,9 @@ const Services = () => {
       once: true
     })
     
-    // Get user type from user data or default to Adult
-    if (user?.userType) {
-      setUserType(user.userType)
-    }
+    // Get user type from authenticated user or default to Adult for non-authenticated users
+    const currentUserType = user?.userType || 'Adult'
+    setUserType(currentUserType)
   }, [user])
 
   const getHeroContent = () => {
@@ -169,7 +169,9 @@ const Services = () => {
   const servicesContent = getServicesContent()
 
   return (
-    <div className="pt-16 sm:pt-20 bg-gray-50 min-h-screen">
+    <div className="hero-section bg-gray-50 min-h-screen">
+
+
       {/* Hero Section */}
       <section className="relative py-24 bg-gradient-to-br from-slate-700 via-slate-800 to-slate-900 text-white overflow-hidden">
         <div className="absolute inset-0 bg-black/30"></div>
@@ -389,7 +391,7 @@ const Services = () => {
         </div>
       </section>
 
-      {/* Join Coaching Session Section */}
+      {/* Video Meeting Section */}
       <section className="py-20 bg-gradient-to-br from-green-50 to-blue-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
@@ -404,107 +406,21 @@ const Services = () => {
             </h2>
             <div className="w-20 h-1 bg-green-600 mx-auto rounded-full mb-4"></div>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              Enter your meeting link to connect with your mentor
+              Connect with your mentor through our video meeting platform
             </p>
           </motion.div>
 
-          <div className="max-w-2xl mx-auto">
-            <motion.div
-              className="bg-white rounded-2xl p-8 shadow-xl border border-gray-200"
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
-            >
-              <div className="text-center mb-8">
-                <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <i className="bi bi-camera-video text-3xl text-green-600"></i>
-                </div>
-                <h3 className="text-2xl font-bold text-slate-700 mb-2">
-                  Ready to Join?
-                </h3>
-                <p className="text-gray-600">
-                  Paste your meeting link below to start your coaching session
-                </p>
-              </div>
-
-              {/* Meeting Link Input */}
-              <div className="mb-6">
-                <label className="block text-sm font-semibold text-slate-700 mb-3">
-                  Meeting Link
-                </label>
-                <div className="relative">
-                  <input
-                    type="url"
-                    placeholder="https://meet.google.com/xxx-xxxx-xxx or https://zoom.us/j/xxxxxxxxx"
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-green-500 focus:outline-none transition-colors duration-300 pr-12"
-                  />
-                  <i className="bi bi-link-45deg absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                </div>
-                <p className="text-xs text-gray-500 mt-2">
-                  Your mentor will provide this link via email before the session
-                </p>
-              </div>
-
-              {/* Join Button */}
-              <motion.button
-                className="w-full bg-green-600 text-white py-4 px-6 rounded-lg font-semibold text-lg hover:bg-green-700 transition-colors duration-300 flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <i className="bi bi-box-arrow-up-right"></i>
-                <span>Join Session</span>
-              </motion.button>
-
-              {/* Session Info */}
-              <div className="mt-8 bg-gray-50 rounded-xl p-6">
-                <h4 className="text-lg font-semibold text-slate-700 mb-4 flex items-center">
-                  <i className="bi bi-info-circle text-green-600 mr-2"></i>
-                  Session Information
-                </h4>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-                  <div className="flex items-center space-x-2">
-                    <i className="bi bi-clock text-gray-500"></i>
-                    <span className="text-gray-600">Duration: 45 minutes</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <i className="bi bi-person text-gray-500"></i>
-                    <span className="text-gray-600">1-on-1 Coaching</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <i className="bi bi-shield-check text-gray-500"></i>
-                    <span className="text-gray-600">Secure & Private</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <i className="bi bi-headset text-gray-500"></i>
-                    <span className="text-gray-600">Audio & Video</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Quick Tips */}
-              <div className="mt-6 bg-blue-50 rounded-xl p-6">
-                <h4 className="text-sm font-semibold text-slate-700 mb-3 flex items-center">
-                  <i className="bi bi-lightbulb text-blue-600 mr-2"></i>
-                  Quick Tips
-                </h4>
-                <ul className="text-sm text-gray-600 space-y-2">
-                  <li className="flex items-start space-x-2">
-                    <i className="bi bi-check2 text-blue-600 mt-0.5"></i>
-                    <span>Test your camera and microphone before joining</span>
-                  </li>
-                  <li className="flex items-start space-x-2">
-                    <i className="bi bi-check2 text-blue-600 mt-0.5"></i>
-                    <span>Find a quiet space with good lighting</span>
-                  </li>
-                  <li className="flex items-start space-x-2">
-                    <i className="bi bi-check2 text-blue-600 mt-0.5"></i>
-                    <span>Have a notebook ready for taking notes</span>
-                  </li>
-                </ul>
-              </div>
-            </motion.div>
-          </div>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+          >
+            <VideoMeeting 
+              userType={userType} 
+              subscriptionType={user?.subscriptionType || 'free'} 
+            />
+          </motion.div>
         </div>
       </section>
 

@@ -136,8 +136,8 @@ const Header = () => {
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-[9999] bg-primary-500/95 backdrop-blur-md transition-all duration-500 border-b border-white/10">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between py-3 sm:py-4 relative">
+      <header className="header-fixed bg-primary-500/95 backdrop-blur-md transition-all duration-500 border-b border-white/10 overflow-visible">
+        <div className="header-container container mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between py-3 sm:py-4 relative">
           {/* Logo */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
@@ -271,7 +271,7 @@ const Header = () => {
           {/* Desktop & Tablet Login/Profile Button */}
           <div className="hidden md:flex items-center space-x-3">
             {isLoggedIn ? (
-              <div className="relative" ref={profileDropdownRef}>
+              <div className="dropdown-parent relative" ref={profileDropdownRef}>
                 <motion.button
                   className="flex items-center space-x-2 text-white hover:text-accent-400 transition-colors p-2 rounded-lg hover:bg-white/10"
                   onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
@@ -289,7 +289,7 @@ const Header = () => {
                 <AnimatePresence>
                   {isProfileDropdownOpen && (
                     <motion.div
-                      className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-[99999]"
+                      className="profile-dropdown w-48 bg-white rounded-lg shadow-xl border border-gray-200 py-2"
                       initial={{ opacity: 0, y: -10, scale: 0.95 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: -10, scale: 0.95 }}
@@ -500,14 +500,16 @@ const Header = () => {
                   variants={menuItemVariants}
                 >
                   {[
-                    { icon: 'bi bi-facebook', label: 'Facebook' },
-                    { icon: 'bi bi-twitter-x', label: 'Twitter' },
-                    { icon: 'bi bi-instagram', label: 'Instagram' },
-                    { icon: 'bi bi-linkedin', label: 'LinkedIn' }
+                    { icon: 'bi bi-facebook', label: 'Facebook', url: 'https://facebook.com/habitup' },
+                    { icon: 'bi bi-twitter-x', label: 'Twitter', url: 'https://twitter.com/habitup' },
+                    { icon: 'bi bi-instagram', label: 'Instagram', url: 'https://instagram.com/habitup' },
+                    { icon: 'bi bi-linkedin', label: 'LinkedIn', url: 'https://linkedin.com/company/habitup' }
                   ].map((social, index) => (
                     <motion.a
                       key={index}
-                      href="#"
+                      href={social.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="w-10 h-10 bg-white/10 hover:bg-accent-400 text-white hover:text-primary-500 rounded-full flex items-center justify-center transition-all duration-300"
                       whileHover={{ scale: 1.1, rotate: 5 }}
                       whileTap={{ scale: 0.9 }}

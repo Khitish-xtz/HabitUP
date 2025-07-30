@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Autoplay } from 'swiper/modules'
 import { motion, useInView, useScroll, useTransform } from 'framer-motion'
@@ -8,12 +9,19 @@ import 'swiper/css'
 import 'aos/dist/aos.css'
 
 const Home = () => {
+  const navigate = useNavigate()
   const heroRef = useRef(null)
   const aboutRef = useRef(null)
   const servicesRef = useRef(null)
   const featuresRef = useRef(null)
   
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)
+  const [adminLoginData, setAdminLoginData] = useState({
+    email: '',
+    password: ''
+  })
+  const [adminLoginMessage, setAdminLoginMessage] = useState('')
+  const [isAdminLoading, setIsAdminLoading] = useState(false)
 
   const { scrollYProgress } = useScroll()
   const heroY = useTransform(scrollYProgress, [0, 1], ['0%', '50%'])
@@ -34,6 +42,108 @@ const Home = () => {
       mirror: false
     })
   }, [])
+
+  // Admin Login Handler with Demo Mode
+  const handleAdminLogin = async (e) => {
+    e.preventDefault()
+    setIsAdminLoading(true)
+    setAdminLoginMessage('')
+
+    const email = e.target.adminEmail.value
+    const password = e.target.adminPassword.value
+
+    console.log('Admin login attempt:', { email, password: '***' })
+
+    if (!email || !password) {
+      setAdminLoginMessage('<div class="text-red-400 text-sm">Please fill in all fields</div>')
+      setIsAdminLoading(false)
+      return
+    }
+
+    // Super User Credentials for Testing
+    const superUserCredentials = {
+      email: 'superuser@habitup.com',
+      password: 'SuperUser@2024!'
+    }
+
+    try {
+      setAdminLoginMessage('<div class="text-white text-sm">Logging in...</div>')
+      
+      // Check for super user credentials first
+      if (email === superUserCredentials.email && password === superUserCredentials.password) {
+        console.log('Super user login successful')
+        
+        // Super user login success
+        const superUserData = {
+          token: 'superuser-token-' + Date.now(),
+          admin: {
+            name: 'Super User',
+            email: 'superuser@habitup.com',
+            role: 'Super User',
+            permissions: ['create', 'read', 'update', 'delete', 'manage_users', 'manage_system', 'view_analytics']
+          }
+        }
+
+        // Store super user data
+        localStorage.setItem('adminToken', superUserData.token)
+        localStorage.setItem('adminName', superUserData.admin.name)
+        localStorage.setItem('adminEmail', superUserData.admin.email)
+        localStorage.setItem('adminRole', superUserData.admin.role)
+        localStorage.setItem('isDemoAdmin', 'false')
+
+        console.log('Admin data stored in localStorage:', {
+          token: superUserData.token,
+          name: superUserData.admin.name,
+          email: superUserData.admin.email
+        })
+
+        setAdminLoginMessage('<div class="text-green-400 text-sm">Super user login successful! Redirecting...</div>')
+        
+        // Redirect to admin dashboard
+        setTimeout(() => {
+          console.log('Navigating to /admin/dashboard')
+          navigate('/admin/dashboard')
+        }, 1000)
+        
+        setIsAdminLoading(false)
+        return
+      }
+
+      // If not demo credentials, try real API
+      const response = await fetch('https://habit-up-backend.onrender.com/habit/auth/admin/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password })
+      })
+
+      if (!response.ok) {
+        const errorData = await response.text()
+        throw new Error(errorData || 'Admin login failed')
+      }
+
+      const data = await response.json()
+
+      // Store real admin data
+      localStorage.setItem('adminToken', data.token)
+      localStorage.setItem('adminName', data.admin.name)
+      localStorage.setItem('adminEmail', data.admin.email)
+      localStorage.removeItem('isDemoAdmin')
+
+      setAdminLoginMessage('<div class="text-green-400 text-sm">Login successful! Redirecting...</div>')
+      
+      // Redirect to admin dashboard
+      setTimeout(() => {
+        navigate('/admin/dashboard')
+      }, 1000)
+
+    } catch (error) {
+      setAdminLoginMessage(`<div class="text-red-400 text-sm">${error.message}</div>`)
+    } finally {
+      setIsAdminLoading(false)
+    }
+  }
 
   const testimonialImages = [
     'sanchita shetty qoute.png',
@@ -363,6 +473,7 @@ const Home = () => {
                 </motion.a>
 
                 <motion.button
+                  onClick={() => navigate('/about')}
                   className="inline-flex items-center justify-center border-2 border-accent-400 text-accent-400 font-raleway font-medium text-sm sm:text-base px-6 sm:px-7 py-3 rounded-full transition-all duration-500 hover:bg-accent-400 hover:text-primary-500"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
@@ -777,6 +888,143 @@ const Home = () => {
         </div>
       </section>
 
+      {/* Admin Login Section */}
+      <section className="py-16 sm:py-20 bg-white" id="admin-login">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            className="text-center mb-12"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+          >
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4 text-primary-500 font-raleway">
+              Admin Portal
+            </h2>
+            <p className="text-gray-600 max-w-2xl mx-auto text-sm sm:text-base">
+              Secure access for HabitUP administrators
+            </p>
+          </motion.div>
+
+          <div className="flex justify-center">
+            <motion.div
+              className="w-full max-w-md"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+            >
+              <div className="bg-primary-500 rounded-2xl p-6 sm:p-8 shadow-2xl">
+                <h3 className="text-xl sm:text-2xl font-bold text-center mb-6 text-accent-400">
+                  Admin Login
+                </h3>
+                
+                {/* Demo Credentials Display */}
+                <motion.div
+                  className="bg-accent-400/20 border border-accent-400/30 rounded-lg p-4 mb-6"
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.5, delay: 0.3 }}
+                >
+                  <div className="flex items-center justify-center mb-2">
+                    <i className="bi bi-info-circle text-accent-400 mr-2"></i>
+                    <span className="text-accent-400 font-semibold text-sm">Demo Credentials</span>
+                  </div>
+                  <div className="text-center space-y-1">
+                    <div className="text-white text-sm">
+                      <span className="font-medium">Email:</span> superuser@habitup.com
+                    </div>
+                    <div className="text-white text-sm">
+                      <span className="font-medium">Password:</span> SuperUser@2024!
+                    </div>
+                  </div>
+                  <div className="text-center mt-2 space-y-1">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        document.getElementById('adminEmail').value = 'superuser@habitup.com'
+                        document.getElementById('adminPassword').value = 'SuperUser@2024!'
+                      }}
+                      className="block text-accent-400 text-xs hover:text-accent-300 underline transition-colors"
+                    >
+                      Click to auto-fill
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        // Set super user data for testing
+                        localStorage.setItem('adminToken', 'superuser-token-' + Date.now())
+                        localStorage.setItem('adminName', 'Super User')
+                        localStorage.setItem('adminEmail', 'superuser@habitup.com')
+                        localStorage.setItem('adminRole', 'Super User')
+                        localStorage.setItem('isDemoAdmin', 'false')
+                        navigate('/admin/test')
+                      }}
+                      className="block text-blue-400 text-xs hover:text-blue-300 underline transition-colors"
+                    >
+                      Direct Test (Debug)
+                    </button>
+                  </div>
+                </motion.div>
+
+                <form className="space-y-4" onSubmit={handleAdminLogin}>
+                  <div>
+                    <label htmlFor="adminEmail" className="block text-white font-medium mb-2 text-sm sm:text-base">
+                      Email
+                    </label>
+                    <input
+                      type="email"
+                      id="adminEmail"
+                      name="adminEmail"
+                      className="w-full px-4 py-3 bg-gray-300 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-400 transition-all duration-300 text-sm sm:text-base"
+                      placeholder="Enter admin email"
+                      required
+                      disabled={isAdminLoading}
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="adminPassword" className="block text-white font-medium mb-2 text-sm sm:text-base">
+                      Password
+                    </label>
+                    <input
+                      type="password"
+                      id="adminPassword"
+                      name="adminPassword"
+                      className="w-full px-4 py-3 bg-gray-300 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-400 transition-all duration-300 text-sm sm:text-base"
+                      placeholder="Enter password"
+                      required
+                      disabled={isAdminLoading}
+                    />
+                  </div>
+                  {adminLoginMessage && (
+                    <div 
+                      className="text-center text-sm"
+                      dangerouslySetInnerHTML={{ __html: adminLoginMessage }}
+                    />
+                  )}
+                  <motion.button
+                    type="submit"
+                    className="w-full bg-gradient-to-r from-accent-400 to-yellow-400 text-primary-500 font-bold py-3 px-6 rounded-full hover:shadow-lg transform hover:-translate-y-1 transition-all duration-300 text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed"
+                    whileHover={!isAdminLoading ? { scale: 1.02 } : {}}
+                    whileTap={!isAdminLoading ? { scale: 0.98 } : {}}
+                    disabled={isAdminLoading}
+                  >
+                    {isAdminLoading ? (
+                      <div className="flex items-center justify-center">
+                        <div className="w-4 h-4 border-2 border-primary-500 border-t-transparent rounded-full animate-spin mr-2"></div>
+                        Logging in...
+                      </div>
+                    ) : (
+                      'Login'
+                    )}
+                  </motion.button>
+                </form>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
       {/* Contact Section */}
       <section className="py-12 sm:py-16 lg:py-20 bg-gray-50" id="contact">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -828,6 +1076,7 @@ const Home = () => {
             transition={{ duration: 0.8, delay: 0.4 }}
           >
             <motion.button
+              onClick={() => setIsLoginModalOpen(true)}
               className="bg-primary-500 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full font-semibold text-sm sm:text-base hover:bg-primary-600 transition-colors shadow-lg hover:shadow-xl"
               whileHover={{ scale: 1.05, boxShadow: "0 20px 40px rgba(34, 59, 82, 0.3)" }}
               whileTap={{ scale: 0.95 }}

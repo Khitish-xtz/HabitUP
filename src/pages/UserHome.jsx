@@ -1,18 +1,123 @@
 import { useEffect, useRef } from 'react'
 import { motion, useInView } from 'framer-motion'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import AOS from 'aos'
 import 'aos/dist/aos.css'
 
 const UserHome = () => {
   const { user } = useAuth()
+  const navigate = useNavigate()
   const heroRef = useRef(null)
   const videosRef = useRef(null)
   const pricingRef = useRef(null)
   const heroInView = useInView(heroRef, { once: true, margin: "-100px" })
   const videosInView = useInView(videosRef, { once: true, margin: "-100px" })
   const pricingInView = useInView(pricingRef, { once: true, margin: "-100px" })
+
+  // Get user-specific content based on user type
+  const getUserSpecificContent = () => {
+    switch (user?.userType) {
+      case 'Child':
+        return {
+          heroTitle: `Welcome to Fun Learning, ${user?.firstName}! 🎨`,
+          heroSubtitle: 'Discover amazing stories, fun activities, and build great habits through play and creativity!',
+          heroImage: '/img/ChildBoyReview.jpg',
+          primaryColor: 'from-pink-500 to-purple-600',
+          features: [
+            {
+              title: 'Fun Story Time',
+              description: 'Listen to exciting stories that teach good habits',
+              icon: 'fas fa-book-open'
+            },
+            {
+              title: 'Creative Activities',
+              description: 'Draw, color, and create while learning',
+              icon: 'fas fa-palette'
+            },
+            {
+              title: 'Habit Games',
+              description: 'Play games that help build healthy routines',
+              icon: 'fas fa-gamepad'
+            }
+          ]
+        }
+      case 'Elder':
+        return {
+          heroTitle: `Welcome, ${user?.firstName}! 🙏`,
+          heroSubtitle: 'Find peace, wisdom, and gentle practices for a fulfilling and healthy life in your golden years.',
+          heroImage: '/img/ElderGirlReview.jpg',
+          primaryColor: 'from-green-500 to-teal-600',
+          features: [
+            {
+              title: 'Gentle Meditation',
+              description: 'Peaceful meditation practices for inner calm',
+              icon: 'fas fa-leaf'
+            },
+            {
+              title: 'Spiritual Guidance',
+              description: 'Wisdom from ancient texts and teachings',
+              icon: 'fas fa-om'
+            },
+            {
+              title: 'Health & Wellness',
+              description: 'Gentle exercises and wellness practices',
+              icon: 'fas fa-heart'
+            }
+          ]
+        }
+      case 'Doctor':
+        return {
+          heroTitle: `Welcome, Dr. ${user?.firstName}! 👨‍⚕️`,
+          heroSubtitle: 'Access your coaching dashboard and help patients transform their lives through better habits.',
+          heroImage: '/img/ApplyDoctor.png',
+          primaryColor: 'from-blue-500 to-indigo-600',
+          features: [
+            {
+              title: 'Patient Management',
+              description: 'Track and manage your patients progress',
+              icon: 'fas fa-users'
+            },
+            {
+              title: 'Session Scheduling',
+              description: 'Schedule and conduct coaching sessions',
+              icon: 'fas fa-calendar'
+            },
+            {
+              title: 'Progress Analytics',
+              description: 'View detailed progress reports and insights',
+              icon: 'fas fa-chart-line'
+            }
+          ]
+        }
+      default: // Adult
+        return {
+          heroTitle: `Welcome back, ${user?.firstName}! 🚀`,
+          heroSubtitle: 'Transform your life through powerful habit-building techniques and personalized guidance.',
+          heroImage: '/img/HabitFormation.jpg',
+          primaryColor: 'from-primary-500 to-blue-600',
+          features: [
+            {
+              title: 'Habit Tracking',
+              description: 'Monitor your daily habits and build consistency',
+              icon: 'fas fa-check-circle'
+            },
+            {
+              title: 'Personal Coaching',
+              description: 'Get guidance from certified habit coaches',
+              icon: 'fas fa-user-tie'
+            },
+            {
+              title: 'Progress Analytics',
+              description: 'Track your improvement with detailed insights',
+              icon: 'fas fa-chart-bar'
+            }
+          ]
+        }
+    }
+  }
+
+  const userContent = getUserSpecificContent()
 
   useEffect(() => {
     AOS.init({
@@ -99,9 +204,9 @@ const UserHome = () => {
   ]
 
   return (
-    <div className="pt-16 sm:pt-20 bg-gray-50 min-h-screen overflow-x-hidden">
+    <div className="hero-section bg-gray-50 min-h-screen overflow-x-hidden">
       {/* Hero Section - Enhanced User Display */}
-      <section ref={heroRef} className="relative overflow-hidden py-20 sm:py-24 bg-gradient-to-br from-primary-500 via-primary-600 to-primary-700 text-white">
+      <section ref={heroRef} className={`relative overflow-hidden py-20 sm:py-24 bg-gradient-to-br ${userContent.primaryColor} text-white`}>
         {/* Animated Background Elements */}
         <div className="absolute inset-0">
           <div className="absolute top-10 left-10 w-20 h-20 bg-white/10 rounded-full animate-pulse"></div>
@@ -130,14 +235,12 @@ const UserHome = () => {
                   <span className="text-sm font-medium">You're doing great!</span>
                 </motion.div>
                 <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-4 font-raleway">
-                  Welcome Back,
-                  <span className="block text-accent-400 mt-2">{user?.name || 'Champion'}!</span>
+                  {userContent.heroTitle}
                 </h1>
               </div>
 
               <p className="text-xl sm:text-2xl text-white/90 mb-8 leading-relaxed">
-                Ready to continue your <span className="text-accent-400 font-semibold">transformation journey</span>?
-                Let's build habits that last a lifetime.
+                {userContent.heroSubtitle}
               </p>
 
               {/* Enhanced Stats Display */}
@@ -171,8 +274,13 @@ const UserHome = () => {
 
               {/* Enhanced Action Buttons */}
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                <motion.a
-                  href="#learning"
+                <motion.button
+                  onClick={() => {
+                    const learningSection = document.getElementById('learning');
+                    if (learningSection) {
+                      learningSection.scrollIntoView({ behavior: 'smooth' });
+                    }
+                  }}
                   className="group bg-white text-primary-500 px-8 py-4 rounded-full font-semibold hover:bg-gray-100 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
@@ -182,9 +290,14 @@ const UserHome = () => {
                     Start Learning
                     <i className="bi bi-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
                   </span>
-                </motion.a>
-                <motion.a
-                  href="#subscription"
+                </motion.button>
+                <motion.button
+                  onClick={() => {
+                    const subscriptionSection = document.getElementById('subscription');
+                    if (subscriptionSection) {
+                      subscriptionSection.scrollIntoView({ behavior: 'smooth' });
+                    }
+                  }}
                   className="group border-2 border-white text-white px-8 py-4 rounded-full font-semibold hover:bg-white hover:text-primary-500 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
@@ -194,7 +307,7 @@ const UserHome = () => {
                     Unlock Premium
                     <i className="bi bi-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
                   </span>
-                </motion.a>
+                </motion.button>
               </div>
             </motion.div>
 
@@ -228,6 +341,170 @@ const UserHome = () => {
               </div>
             </motion.div>
           </div>
+        </div>
+      </section>
+
+      {/* Clients/Testimonials Section */}
+      <section className="py-12 sm:py-16 bg-gray-100">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            className="text-center mb-12"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+          >
+            <h2 className="text-2xl sm:text-3xl font-bold mb-4 text-primary-500">
+              What Our Users Say
+            </h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              Hear from our community of successful habit builders who have transformed their lives
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[
+              { name: "Sanchita Shetty", image: "/img/sanchita shetty qoute.png" },
+              { name: "Smriti Kuchal", image: "/img/smriti kuchal new quote.png" },
+              { name: "Benedict Baba", image: "/img/Benedict baba quote.png" },
+              { name: "Yogendra Singh Yadav", image: "/img/yogendra singh yadabv quote.png" },
+              { name: "Dr. Sidharth Nayak", image: "/img/Dr. sidhartha nayak quote.png" },
+              { name: "Victoria Maa", image: "/img/victoria quote.png" }
+            ].map((testimonial, index) => (
+              <motion.div
+                key={index}
+                className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                whileHover={{ y: -5 }}
+              >
+                <img
+                  src={testimonial.image}
+                  alt={testimonial.name}
+                  className="w-full h-64 object-cover"
+                />
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* About Section */}
+      <section className="py-16 sm:py-20 bg-white">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <motion.div
+              className="order-2 lg:order-1"
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+            >
+              <h3 className="text-3xl sm:text-4xl font-bold mb-6 text-primary-500">About Us</h3>
+              <p className="text-gray-600 mb-6 leading-relaxed">
+                The heart of our mission is the belief that the mind holds extraordinary power to transform lives.
+                We tap into the immense potential of hypnosis and affirmations to help individuals build meaningful
+                habits, overcome inner blocks, and unlock lasting change. By gently reprogramming the subconscious,
+                we make personal growth not only possible but practical.
+              </p>
+
+              <div className="space-y-6">
+                <div className="flex items-start space-x-4">
+                  <div className="w-8 h-8 bg-primary-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                    <i className="bi bi-reception-4 text-white text-sm"></i>
+                  </div>
+                  <div>
+                    <h5 className="font-semibold text-gray-800 mb-2">Science and Wisdom in Harmony</h5>
+                    <p className="text-gray-600 text-sm">
+                      Rooted in both science and ancient wisdom, hypnosis allows us to access deeper layers of the mind
+                      where true transformation begins. Whether it's for healing, focus, or self-discovery, our approach
+                      empowers individuals to live more intentional, balanced, and fulfilling lives.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start space-x-4">
+                  <div className="w-8 h-8 bg-primary-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                    <i className="bi bi-person-heart text-white text-sm"></i>
+                  </div>
+                  <div>
+                    <h5 className="font-semibold text-gray-800 mb-2">Reviving Ancient Healing</h5>
+                    <p className="text-gray-600 text-sm">
+                      It is also an initiative to revive ancient healing practices rooted in Vedic wisdom and the
+                      teachings of the Bhagavad Gita — guiding humanity toward the universal science of meditation
+                      and nurturing noble qualities for a more harmonious world.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+            <motion.div
+              className="order-1 lg:order-2"
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+            >
+              <img
+                src="/img/MentorMouth.jpg"
+                alt="About us"
+                className="w-full rounded-xl shadow-2xl"
+              />
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* Guru Blessings Section */}
+      <section className="py-16 sm:py-20 bg-gray-50">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+          >
+            <h2 className="text-3xl sm:text-4xl font-bold mb-6 text-primary-500">
+              With the Blessings of Our Guru
+            </h2>
+            <p className="text-lg text-gray-600 mb-12 max-w-4xl mx-auto italic">
+              With the blessings and guidance of our Gurus, we support Kriyavans—those initiated into Kriya Yoga—who
+              struggle with daily practice, by offering live, unrecorded virtual sessions to gently build the habit
+              of regular meditation within a devoted community.
+            </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+              <motion.div
+                className="bg-white rounded-xl shadow-lg overflow-hidden"
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+              >
+                <img
+                  src="/img/path-to-image-1.png"
+                  alt="Prajñānānanda Paramahaṃsa Guru 1"
+                  className="w-full h-64 object-cover"
+                />
+              </motion.div>
+              <motion.div
+                className="bg-white rounded-xl shadow-lg overflow-hidden"
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+              >
+                <img
+                  src="/img/path-to-image-2.png"
+                  alt="Prajñānānanda Paramahaṃsa Guru 2"
+                  className="w-full h-64 object-cover"
+                />
+              </motion.div>
+            </div>
+          </motion.div>
         </div>
       </section>
 
@@ -320,6 +597,213 @@ const UserHome = () => {
                       className="absolute inset-0"
                     ></a>
                   )}
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Featured Services Section */}
+      <section className="py-16 sm:py-20 bg-white">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            className="text-center mb-16"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+          >
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4 text-primary-500">
+              Featured Services
+            </h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              Track progress, set goals, and stay consistent with powerful habit-building tools
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[
+              {
+                icon: "fa-solid fa-atom",
+                title: "Science-Backed Strategies",
+                description: "Our program uses proven psychological techniques to help you build sustainable habits.",
+                image: "/img/science backed.jpg",
+                delay: 0.1
+              },
+              {
+                icon: "fa-solid fa-chart-gantt",
+                title: "Personalized Habit Tracking",
+                description: "Track your progress with customized habit-tracking tools tailored to your goals.",
+                image: "/img/PersonalizedHabit.jpg",
+                delay: 0.2
+              },
+              {
+                icon: "fa-solid fa-comments",
+                title: "Community Support",
+                description: "Join a supportive community of like-minded individuals on the same journey.",
+                image: "/img/customer.jpg",
+                delay: 0.3
+              },
+              {
+                icon: "fa-solid fa-chalkboard",
+                title: "Expert Coaching",
+                description: "Get guidance from experienced coaches to stay on track and overcome challenges.",
+                image: "/img/expert coaching.jpg",
+                delay: 0.4
+              },
+              {
+                icon: "fa-solid fa-users-line",
+                title: "Comprehensive Guide",
+                description: "Access a step-by-step guide to help you build and maintain new habits.",
+                image: "/img/comprehensive guide.jpg",
+                delay: 0.5
+              },
+              {
+                icon: "fa-solid fa-stairs",
+                title: "Guided Challenges",
+                description: "21-days challenges to build habits, to adopt yourself in the process of transformation.",
+                image: "/img/guided challenges.jpg",
+                delay: 0.6
+              }
+            ].map((service, index) => (
+              <motion.div
+                key={index}
+                className="group bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: service.delay }}
+                whileHover={{ y: -10 }}
+              >
+                <div className="relative h-48 overflow-hidden">
+                  <img
+                    src={service.image}
+                    alt={service.title}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+                </div>
+                <div className="p-6 relative">
+                  <div className="absolute -top-6 left-6">
+                    <div className="w-12 h-12 bg-primary-500 rounded-lg flex items-center justify-center shadow-lg">
+                      <i className={`${service.icon} text-white text-lg`}></i>
+                    </div>
+                  </div>
+                  <div className="pt-8">
+                    <h3 className="text-xl font-bold text-gray-800 mb-3 group-hover:text-primary-500 transition-colors">
+                      {service.title}
+                    </h3>
+                    <p className="text-gray-600 leading-relaxed">
+                      {service.description}
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="py-16 sm:py-20 bg-gray-50">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            className="text-center mb-16"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+          >
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4 text-primary-500">
+              Features
+            </h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              Smart Systems, Lasting Change - Features Designed for Your Success!
+            </p>
+          </motion.div>
+
+          <div className="space-y-20">
+            {[
+              {
+                title: "DAILY MOTIVATION",
+                description: "Stay inspired with daily motivational quotes and progress reminders tailored to your habit journey.",
+                image: "/img/daily motivation.jpg",
+                features: [
+                  "Personalized motivational content based on your habits",
+                  "Celebration of milestones and streaks to keep you engaged",
+                  "Encouraging notifications when you need them most"
+                ],
+                reverse: false
+              },
+              {
+                title: "EXCLUSIVE RESOURCES",
+                description: "Access premium content designed to help you build and maintain successful habits.",
+                image: "/img/exclusive resources.jpg",
+                features: [
+                  "Guided meditations and habit-building worksheets",
+                  "Expert interviews and science-backed strategies",
+                  "Step-by-step guides for common habit challenges"
+                ],
+                reverse: true
+              },
+              {
+                title: "PROGRESS REPORTS",
+                description: "Visualize your habit journey with detailed analytics and progress tracking that shows your consistency and growth.",
+                image: "/img/progress report.jpg",
+                features: [
+                  "Weekly and monthly habit performance reports",
+                  "Streak counters to maintain motivation",
+                  "Customizable charts showing your habit evolution"
+                ],
+                reverse: false
+              },
+              {
+                title: "FLEXIBLE & ADAPTIVE LEARNING",
+                description: "Our system adapts to your progress and adjusts recommendations accordingly.",
+                image: "/img/adaptive learning.jpg",
+                features: [
+                  "Adjusts to your schedule - morning person or night owl",
+                  "Difficulty scales with your progress",
+                  "Designed to help you get back on track after setbacks"
+                ],
+                reverse: true
+              }
+            ].map((feature, index) => (
+              <motion.div
+                key={index}
+                className={`grid grid-cols-1 lg:grid-cols-2 gap-12 items-center ${feature.reverse ? 'lg:grid-flow-col-dense' : ''}`}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8, delay: index * 0.1 }}
+              >
+                <div className={feature.reverse ? 'lg:col-start-2' : ''}>
+                  <motion.img
+                    src={feature.image}
+                    alt={feature.title}
+                    className="w-full rounded-xl shadow-2xl"
+                    whileHover={{ scale: 1.05 }}
+                    transition={{ duration: 0.3 }}
+                  />
+                </div>
+                <div className={feature.reverse ? 'lg:col-start-1' : ''}>
+                  <h3 className="text-2xl sm:text-3xl font-bold mb-4 text-primary-500">
+                    {feature.title}
+                  </h3>
+                  <p className="text-gray-600 mb-6 italic text-lg">
+                    {feature.description}
+                  </p>
+                  <ul className="space-y-3">
+                    {feature.features.map((item, idx) => (
+                      <li key={idx} className="flex items-start space-x-3">
+                        <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                          <i className="bi bi-check text-white text-xs font-bold"></i>
+                        </div>
+                        <span className="text-gray-700">{item}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               </motion.div>
             ))}
@@ -507,6 +991,7 @@ const UserHome = () => {
               </div>
 
               <motion.button
+                onClick={() => navigate('/subscription')}
                 className="w-full py-4 px-6 bg-white text-teal-600 rounded-full font-bold text-lg shadow-lg hover:shadow-xl transition-all duration-300 relative overflow-hidden group"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -555,6 +1040,275 @@ const UserHome = () => {
               </div>
             </div>
           </motion.div>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="py-16 sm:py-20 bg-white">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            className="text-center mb-16"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+          >
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4 text-primary-500">
+              Frequently Asked Questions
+            </h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              Your Questions, Answered – Build Better Habits, Transform Your Life!
+            </p>
+          </motion.div>
+
+          <div className="max-w-4xl mx-auto space-y-8">
+            {[
+              {
+                question: "What is this program about?",
+                answer: "This program is designed to help you build sustainable habits that lead to long-term transformation in areas like health, productivity, mindset, and personal growth. It focuses on small, consistent actions that create lasting change."
+              },
+              {
+                question: "Who is this program for?",
+                answer: "This program is for anyone who wants to break bad habits, develop positive routines, and create a system for success—whether you're working on fitness, focus, organization, or self-improvement."
+              },
+              {
+                question: "What if I miss a day?",
+                answer: "Missing a day doesn't mean failure! What matters most is consistency over time. The key is to never miss twice—get back on track the next day."
+              },
+              {
+                question: "How does this program keep me accountable?",
+                answer: "We use habit trackers, progress check-ins, and community support to help you stay committed. You'll also receive guidance on how to build accountability systems that work for you."
+              },
+              {
+                question: "Can I work on multiple habits at once?",
+                answer: "It's best to start small. Focus on one or two key habits at a time before adding more. This prevents overwhelm and increases the chances of success."
+              },
+              {
+                question: "How do I track my progress?",
+                answer: "We provide habit trackers, reflection prompts, and periodic progress check-ins to help you measure improvement and celebrate small wins along the way."
+              },
+              {
+                question: "Is there a support community?",
+                answer: "Yes! You'll have access to a community of like-minded individuals who are also working on habit-building, so you can share experiences, get support, and stay inspired."
+              },
+              {
+                question: "What makes this program different?",
+                answer: "Unlike traditional goal-setting programs, this one focuses on identity-based habit change—meaning you won't just chase goals, you'll transform into the person who naturally embodies them."
+              }
+            ].map((faq, index) => (
+              <motion.div
+                key={index}
+                className="bg-gray-50 rounded-xl p-6 hover:bg-gray-100 transition-colors duration-300"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+              >
+                <div className="flex items-start space-x-4">
+                  <div className="w-8 h-8 bg-primary-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                    <i className="bi bi-question-circle text-white text-sm"></i>
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="text-lg font-semibold text-gray-800 mb-3">
+                      {faq.question}
+                    </h4>
+                    <p className="text-gray-600 leading-relaxed">
+                      {faq.answer}
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Team Section */}
+      <section className="py-16 sm:py-20 bg-gray-50">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            className="text-center mb-16"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+          >
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4 text-primary-500">
+              Team
+            </h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              Our team of experts is committed to exceeding your expectations and ensuring your success!
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {[
+              {
+                name: "Dr. Sashi Bhusan Nayak",
+                role: "Mentor & Guide",
+                company: "Asst. Professor (Ravenshaw University)",
+                image: "/img/SashiSirTeam.png",
+                social: {
+                  twitter: "/static/sashi.html",
+                  facebook: "/static/sashi.html",
+                  instagram: "/static/sashi.html",
+                  linkedin: "/static/sashi.html"
+                }
+              },
+              {
+                name: "Basudev Naik",
+                role: "Backend Developer",
+                company: "Wisen Technology",
+                image: "/img/BasudevProfile.jpeg",
+                social: {
+                  twitter: "https://x.com/basude",
+                  github: "https://github.com/Basudev022",
+                  instagram: "https://www.instagram.com/b_01.dev?igsh=bTcwdW5nemc4MTZ1",
+                  linkedin: "https://www.linkedin.com/in/basudev-naik-388484320"
+                }
+              },
+              {
+                name: "Swastik Behera",
+                role: "FullStack Developer",
+                company: "Deloitte USI",
+                image: "/img/SwastikTeam.jpg",
+                social: {
+                  twitter: "https://x.com/by_swastik",
+                  github: "https://github.com/iswasteek",
+                  instagram: "https://www.instagram.com/iswasteek/",
+                  linkedin: "https://www.linkedin.com/in/swastikk/"
+                }
+              },
+              {
+                name: "Sidharth Pradhan",
+                role: "Frontend Developer",
+                company: "Infosys Limited",
+                image: "/img/SidharthProfile.jpeg",
+                social: {
+                  twitter: "https://x.com/Sidhu45",
+                  github: "https://github.com/Sidharth-45",
+                  instagram: "https://www.instagram.com/__sidhu45__/",
+                  linkedin: "https://www.linkedin.com/in/sidharth-pradhan-900b60200"
+                }
+              }
+            ].map((member, index) => (
+              <motion.div
+                key={index}
+                className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 group"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                whileHover={{ y: -10 }}
+              >
+                <div className="relative overflow-hidden">
+                  <img
+                    src={member.image}
+                    alt={member.name}
+                    className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-300"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    {member.social.twitter && (
+                      <a href={member.social.twitter} className="w-8 h-8 bg-white rounded-full flex items-center justify-center hover:bg-blue-500 hover:text-white transition-colors">
+                        <i className="bi bi-twitter-x text-xs"></i>
+                      </a>
+                    )}
+                    {member.social.github && (
+                      <a href={member.social.github} className="w-8 h-8 bg-white rounded-full flex items-center justify-center hover:bg-gray-800 hover:text-white transition-colors">
+                        <i className="bi bi-github text-xs"></i>
+                      </a>
+                    )}
+                    {member.social.instagram && (
+                      <a href={member.social.instagram} className="w-8 h-8 bg-white rounded-full flex items-center justify-center hover:bg-pink-500 hover:text-white transition-colors">
+                        <i className="bi bi-instagram text-xs"></i>
+                      </a>
+                    )}
+                    {member.social.linkedin && (
+                      <a href={member.social.linkedin} className="w-8 h-8 bg-white rounded-full flex items-center justify-center hover:bg-blue-600 hover:text-white transition-colors">
+                        <i className="bi bi-linkedin text-xs"></i>
+                      </a>
+                    )}
+                  </div>
+                </div>
+                <div className="p-6 text-center">
+                  <h4 className="text-xl font-bold text-gray-800 mb-2">{member.name}</h4>
+                  <p className="text-primary-500 font-medium mb-1">{member.role}</p>
+                  <p className="text-gray-600 text-sm">{member.company}</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Contact Section */}
+      <section className="py-16 sm:py-20 bg-white">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            className="text-center mb-16"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+          >
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4 text-primary-500">
+              Contact
+            </h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              Contact us via the details below for any queries or communication.
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+            {[
+              {
+                icon: "bi bi-geo-alt",
+                title: "Address",
+                content: "Ravenshaw University, Cuttack",
+                link: "https://www.google.com/maps/place/Ravenshaw+University,+Cuttack/@20.4627393,85.8948111,17z",
+                color: "bg-blue-500"
+              },
+              {
+                icon: "bi bi-whatsapp",
+                title: "WhatsApp",
+                content: "+91 94371 35590",
+                link: "https://wa.me/919437135590",
+                color: "bg-green-500"
+              },
+              {
+                icon: "bi bi-envelope",
+                title: "Email",
+                content: "habitupapplication@gmail.com",
+                link: "mailto:habitupapplication@gmail.com",
+                color: "bg-red-500"
+              }
+            ].map((contact, index) => (
+              <motion.div
+                key={index}
+                className="text-center group"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+              >
+                <div className="bg-gray-50 rounded-xl p-8 hover:bg-gray-100 transition-colors duration-300 group-hover:shadow-lg">
+                  <div className={`w-16 h-16 ${contact.color} rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300`}>
+                    <i className={`${contact.icon} text-white text-xl`}></i>
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-800 mb-3">{contact.title}</h3>
+                  <a
+                    href={contact.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-primary-500 hover:text-primary-600 transition-colors font-medium"
+                  >
+                    {contact.content}
+                  </a>
+                </div>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -608,6 +1362,7 @@ const UserHome = () => {
 
             {/* Join Button */}
             <motion.button
+              onClick={() => navigate('/sashi')}
               className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-4 px-8 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transition-all duration-300 group"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}

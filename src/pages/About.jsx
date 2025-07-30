@@ -1,8 +1,10 @@
 import { useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import AOS from 'aos'
 import 'aos/dist/aos.css'
 
 const About = () => {
+  const navigate = useNavigate()
   useEffect(() => {
     AOS.init({
       duration: 600,
@@ -13,7 +15,7 @@ const About = () => {
   }, [])
 
   return (
-    <div className="pt-20">
+    <div className="hero-section">
       {/* Hero Section */}
       <section className="bg-primary-500 text-white py-20">
         <div className="container mx-auto px-4 text-center">
@@ -265,6 +267,7 @@ const About = () => {
             Join thousands of individuals who have already started their transformation journey with HabitUP
           </p>
           <button 
+            onClick={() => navigate('/')}
             className="bg-accent-400 text-primary-500 font-bold py-4 px-8 rounded-full transition-all duration-300 hover:bg-accent-500 hover:shadow-lg hover:scale-105"
             data-aos="fade-up" 
             data-aos-delay="200"

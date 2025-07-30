@@ -1,8 +1,22 @@
 import { useState, useEffect } from 'react'
+import { motion } from 'framer-motion'
+import { useAuth } from '../contexts/AuthContext'
+import { useNavigate } from 'react-router-dom'
 import AOS from 'aos'
 import 'aos/dist/aos.css'
 
 const Doctor = () => {
+  const { user, isAuthenticated } = useAuth()
+  const navigate = useNavigate()
+  
+  const [activeTab, setActiveTab] = useState('dashboard')
+  const [patients, setPatients] = useState([
+    { id: 1, name: 'John Doe', age: 32, lastSession: '2024-01-15', progress: 85, status: 'Active' },
+    { id: 2, name: 'Emma Smith', age: 12, lastSession: '2024-01-14', progress: 92, status: 'Active' },
+    { id: 3, name: 'Robert Johnson', age: 68, lastSession: '2024-01-13', progress: 78, status: 'Inactive' },
+    { id: 4, name: 'Sarah Wilson', age: 28, lastSession: '2024-01-12', progress: 95, status: 'Active' }
+  ])
+  
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -68,8 +82,237 @@ const Doctor = () => {
     'Availability for online consultations'
   ]
 
+  // If user is a doctor, show dashboard; otherwise show instructor application
+  if (user?.userType === 'Doctor') {
+    return (
+      <div className="hero-section min-h-screen bg-gray-50">
+        {/* Doctor Dashboard */}
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {/* Header */}
+          <motion.div
+            className="mb-8"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <h1 className="text-3xl font-bold text-gray-800 mb-2">
+              Welcome, Dr. {user?.firstName}! 👨‍⚕️
+            </h1>
+            <p className="text-gray-600">
+              Manage your patients and track their habit transformation progress
+            </p>
+          </motion.div>
+
+          {/* Navigation Tabs */}
+          <div className="mb-8">
+            <div className="flex space-x-1 bg-gray-100 rounded-lg p-1">
+              {['dashboard', 'patients', 'sessions', 'reports'].map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={`px-6 py-2 rounded-md font-medium transition-all duration-300 capitalize ${
+                    activeTab === tab
+                      ? 'bg-white text-blue-600 shadow-sm'
+                      : 'text-gray-600 hover:text-blue-600'
+                  }`}
+                >
+                  {tab}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Dashboard Content */}
+          {activeTab === 'dashboard' && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+              <motion.div
+                className="bg-white rounded-lg p-6 shadow-sm border border-gray-200"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Total Patients</p>
+                    <p className="text-2xl font-bold text-gray-900">{patients.length}</p>
+                  </div>
+                  <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                    <i className="fas fa-users text-blue-600"></i>
+                  </div>
+                </div>
+              </motion.div>
+
+              <motion.div
+                className="bg-white rounded-lg p-6 shadow-sm border border-gray-200"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Active Patients</p>
+                    <p className="text-2xl font-bold text-gray-900">
+                      {patients.filter(p => p.status === 'Active').length}
+                    </p>
+                  </div>
+                  <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                    <i className="fas fa-user-check text-green-600"></i>
+                  </div>
+                </div>
+              </motion.div>
+
+              <motion.div
+                className="bg-white rounded-lg p-6 shadow-sm border border-gray-200"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Avg Progress</p>
+                    <p className="text-2xl font-bold text-gray-900">
+                      {Math.round(patients.reduce((acc, p) => acc + p.progress, 0) / patients.length)}%
+                    </p>
+                  </div>
+                  <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+                    <i className="fas fa-chart-line text-purple-600"></i>
+                  </div>
+                </div>
+              </motion.div>
+
+              <motion.div
+                className="bg-white rounded-lg p-6 shadow-sm border border-gray-200"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">This Month</p>
+                    <p className="text-2xl font-bold text-gray-900">24</p>
+                  </div>
+                  <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
+                    <i className="fas fa-calendar text-orange-600"></i>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+          )}
+
+          {/* Patients List */}
+          {activeTab === 'patients' && (
+            <motion.div
+              className="bg-white rounded-lg shadow-sm border border-gray-200"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
+              <div className="p-6 border-b border-gray-200">
+                <h3 className="text-lg font-semibold text-gray-800">Patient Management</h3>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Patient
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Age
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Last Session
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Progress
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Status
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {patients.map((patient) => (
+                      <tr key={patient.id} className="hover:bg-gray-50">
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm font-medium text-gray-900">{patient.name}</div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {patient.age}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {patient.lastSession}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex items-center">
+                            <div className="w-full bg-gray-200 rounded-full h-2 mr-2">
+                              <div
+                                className="bg-blue-600 h-2 rounded-full"
+                                style={{ width: `${patient.progress}%` }}
+                              ></div>
+                            </div>
+                            <span className="text-sm text-gray-600">{patient.progress}%</span>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                            patient.status === 'Active' 
+                              ? 'bg-green-100 text-green-800' 
+                              : 'bg-red-100 text-red-800'
+                          }`}>
+                            {patient.status}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                          <button className="text-blue-600 hover:text-blue-900 mr-3">
+                            View
+                          </button>
+                          <button className="text-green-600 hover:text-green-900">
+                            Session
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </motion.div>
+          )}
+
+          {/* Other tabs content can be added here */}
+          {activeTab === 'sessions' && (
+            <motion.div
+              className="bg-white rounded-lg p-8 shadow-sm border border-gray-200 text-center"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
+              <i className="fas fa-video text-4xl text-gray-400 mb-4"></i>
+              <h3 className="text-lg font-semibold text-gray-800 mb-2">Session Management</h3>
+              <p className="text-gray-600">Schedule and manage your patient sessions</p>
+            </motion.div>
+          )}
+
+          {activeTab === 'reports' && (
+            <motion.div
+              className="bg-white rounded-lg p-8 shadow-sm border border-gray-200 text-center"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
+              <i className="fas fa-chart-bar text-4xl text-gray-400 mb-4"></i>
+              <h3 className="text-lg font-semibold text-gray-800 mb-2">Progress Reports</h3>
+              <p className="text-gray-600">View detailed analytics and patient progress reports</p>
+            </motion.div>
+          )}
+        </div>
+      </div>
+    )
+  }
+
+  // Show instructor application form for non-doctor users
   return (
-    <div className="pt-20">
+    <div className="hero-section">
       {/* Hero Section */}
       <section className="py-20 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
         <div className="container mx-auto px-4">

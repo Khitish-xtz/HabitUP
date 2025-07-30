@@ -9,13 +9,45 @@ const Dashboard = () => {
     const { isAuthenticated, isLoading, user } = useAuth()
     const navigate = useNavigate()
 
-    const [habits, setHabits] = useState([
-        { id: 1, name: 'Morning Meditation', completed: true, streak: 15, target: 30 },
-        { id: 2, name: 'Daily Exercise', completed: false, streak: 8, target: 21 },
-        { id: 3, name: 'Read for 30 minutes', completed: true, streak: 22, target: 30 },
-        { id: 4, name: 'Drink 8 glasses of water', completed: false, streak: 5, target: 14 },
-        { id: 5, name: 'Write in journal', completed: true, streak: 12, target: 21 }
-    ])
+    // Get user-specific habits based on user type
+    const getUserSpecificHabits = () => {
+        switch(user?.userType) {
+            case 'Child':
+                return [
+                    { id: 1, name: 'Morning Prayer', completed: true, streak: 15, target: 30 },
+                    { id: 2, name: 'Fun Exercise Time', completed: false, streak: 8, target: 21 },
+                    { id: 3, name: 'Story Reading', completed: true, streak: 22, target: 30 },
+                    { id: 4, name: 'Healthy Eating', completed: false, streak: 5, target: 14 },
+                    { id: 5, name: 'Creative Drawing', completed: true, streak: 12, target: 21 }
+                ]
+            case 'Elder':
+                return [
+                    { id: 1, name: 'Morning Meditation', completed: true, streak: 15, target: 30 },
+                    { id: 2, name: 'Gentle Walking', completed: false, streak: 8, target: 21 },
+                    { id: 3, name: 'Spiritual Reading', completed: true, streak: 22, target: 30 },
+                    { id: 4, name: 'Breathing Exercise', completed: false, streak: 5, target: 14 },
+                    { id: 5, name: 'Family Connection', completed: true, streak: 12, target: 21 }
+                ]
+            case 'Doctor':
+                return [
+                    { id: 1, name: 'Patient Check-ins', completed: true, streak: 15, target: 30 },
+                    { id: 2, name: 'Medical Research', completed: false, streak: 8, target: 21 },
+                    { id: 3, name: 'Continuing Education', completed: true, streak: 22, target: 30 },
+                    { id: 4, name: 'Self-care Practice', completed: false, streak: 5, target: 14 },
+                    { id: 5, name: 'Professional Development', completed: true, streak: 12, target: 21 }
+                ]
+            default: // Adult
+                return [
+                    { id: 1, name: 'Morning Meditation', completed: true, streak: 15, target: 30 },
+                    { id: 2, name: 'Daily Exercise', completed: false, streak: 8, target: 21 },
+                    { id: 3, name: 'Read for 30 minutes', completed: true, streak: 22, target: 30 },
+                    { id: 4, name: 'Drink 8 glasses of water', completed: false, streak: 5, target: 14 },
+                    { id: 5, name: 'Write in journal', completed: true, streak: 12, target: 21 }
+                ]
+        }
+    }
+
+    const [habits, setHabits] = useState(getUserSpecificHabits())
 
     const [showAddHabit, setShowAddHabit] = useState(false)
     const [newHabit, setNewHabit] = useState({ name: '', target: 21 })
@@ -87,7 +119,7 @@ const Dashboard = () => {
     const bestStreak = Math.max(...habits.map(h => h.streak), 0)
 
     return (
-        <div className="pt-16 sm:pt-20 min-h-screen bg-gray-50">
+        <div className="hero-section min-h-screen bg-gray-50">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
                 {/* Header */}
                 <div className="mb-6 sm:mb-8" data-aos="fade-up">

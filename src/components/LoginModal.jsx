@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 
 const LoginModal = ({ isOpen, onClose }) => {
@@ -573,7 +573,7 @@ const LoginModal = ({ isOpen, onClose }) => {
                             className="mr-2"
                           />
                           <label htmlFor="acceptTerms" className="text-white text-sm">
-                            I accept the <a className="text-accent-400 underline hover:text-accent-300" href="/terms">Terms and Conditions</a>
+                            I accept the <Link to="/terms" className="text-accent-400 underline hover:text-accent-300">Terms and Conditions</Link>
                           </label>
                         </div>
                       </motion.div>

@@ -164,6 +164,20 @@ const Upcoming = () => {
         'Exclusive content'
       ],
       popular: true
+    },
+    {
+      name: 'Pro',
+      price: '₹99',
+      period: '/month',
+      features: [
+        'All premium features',
+        'AI habit coach',
+        'Health integration',
+        'Custom challenges',
+        'Team collaboration',
+        'Advanced reporting'
+      ],
+      popular: false
     }
   ]
 
@@ -205,6 +219,7 @@ const Upcoming = () => {
                   Get Started <i className="fas fa-play ml-2"></i>
                 </motion.a>
                 <motion.button
+                  onClick={() => window.location.href = '/about'}
                   className="border-2 border-white text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-white hover:text-primary-500 transition-all duration-300"
                   whileHover={{ scale: 1.05, y: -2 }}
                   whileTap={{ scale: 0.95 }}
@@ -792,100 +807,68 @@ const Upcoming = () => {
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-3xl mx-auto">
-            {/* Free Plan */}
-            <motion.div
-              className="bg-white rounded-xl border border-gray-200 p-6 shadow-md hover:shadow-lg transition-all duration-300"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              whileHover={{ y: -5 }}
-            >
-              <div className="text-center mb-6">
-                <h3 className="text-xl font-bold text-gray-900 mb-2">Free Plan</h3>
-                <div className="text-3xl font-bold text-primary-500 mb-2">
-                  ₹0
-                  <span className="text-base font-normal text-gray-600">/month</span>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            {pricingPlans.map((plan, index) => (
+              <motion.div
+                key={plan.name}
+                className={`rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 relative ${
+                  plan.popular 
+                    ? 'bg-primary-500 text-white' 
+                    : 'bg-white border border-gray-200'
+                }`}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                whileHover={{ y: -5 }}
+              >
+                {plan.popular && (
+                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                    <span className="bg-accent-400 text-primary-500 px-4 py-1 rounded-full text-xs font-bold">
+                      RECOMMENDED
+                    </span>
+                  </div>
+                )}
+
+                <div className="text-center mb-6">
+                  <h3 className={`text-xl font-bold mb-2 ${plan.popular ? 'text-white' : 'text-gray-900'}`}>
+                    {plan.name} Plan
+                  </h3>
+                  <div className={`text-3xl font-bold mb-2 ${plan.popular ? 'text-white' : 'text-primary-500'}`}>
+                    {plan.price}
+                    <span className={`text-base font-normal ${plan.popular ? 'opacity-80' : 'text-gray-600'}`}>
+                      {plan.period}
+                    </span>
+                  </div>
+                  <p className={`text-sm ${plan.popular ? 'opacity-80' : 'text-gray-500'}`}>
+                    {plan.name === 'Free' && 'Perfect to get started'}
+                    {plan.name === 'Premium' && 'Everything you need to succeed'}
+                    {plan.name === 'Pro' && 'Advanced features for power users'}
+                  </p>
                 </div>
-                <p className="text-sm text-gray-500">Perfect to get started</p>
-              </div>
 
-              <ul className="space-y-3 mb-6">
-                <li className="flex items-center text-sm">
-                  <i className="bi bi-check-circle text-green-500 mr-3"></i>
-                  <span>Basic habit tracking</span>
-                </li>
-                <li className="flex items-center text-sm">
-                  <i className="bi bi-check-circle text-green-500 mr-3"></i>
-                  <span>Community access</span>
-                </li>
-                <li className="flex items-center text-sm">
-                  <i className="bi bi-check-circle text-green-500 mr-3"></i>
-                  <span>Daily motivation</span>
-                </li>
-                <li className="flex items-center text-sm">
-                  <i className="bi bi-check-circle text-green-500 mr-3"></i>
-                  <span>Progress tracking</span>
-                </li>
-              </ul>
+                <ul className="space-y-3 mb-6">
+                  {plan.features.map((feature, featureIndex) => (
+                    <li key={featureIndex} className="flex items-center text-sm">
+                      <i className={`bi bi-check-circle mr-3 ${
+                        plan.popular ? 'text-accent-400' : 'text-green-500'
+                      }`}></i>
+                      <span>{feature}</span>
+                    </li>
+                  ))}
+                </ul>
 
-              <button className="w-full py-2 px-4 border-2 border-primary-500 text-primary-500 rounded-lg font-semibold hover:bg-primary-500 hover:text-white transition-colors duration-300">
-                Get Started Free
-              </button>
-            </motion.div>
-
-            {/* Premium Plan */}
-            <motion.div
-              className="bg-primary-500 text-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 relative"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              whileHover={{ y: -5 }}
-            >
-              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                <span className="bg-accent-400 text-primary-500 px-4 py-1 rounded-full text-xs font-bold">
-                  RECOMMENDED
-                </span>
-              </div>
-
-              <div className="text-center mb-6">
-                <h3 className="text-xl font-bold mb-2">Premium Plan</h3>
-                <div className="text-3xl font-bold mb-2">
-                  ₹59
-                  <span className="text-base font-normal opacity-80">/month</span>
-                </div>
-                <p className="text-sm opacity-80">Everything you need to succeed</p>
-              </div>
-
-              <ul className="space-y-3 mb-6">
-                <li className="flex items-center text-sm">
-                  <i className="bi bi-check-circle text-accent-400 mr-3"></i>
-                  <span>All free features</span>
-                </li>
-                <li className="flex items-center text-sm">
-                  <i className="bi bi-check-circle text-accent-400 mr-3"></i>
-                  <span>Advanced analytics</span>
-                </li>
-                <li className="flex items-center text-sm">
-                  <i className="bi bi-check-circle text-accent-400 mr-3"></i>
-                  <span>Personal coaching</span>
-                </li>
-                <li className="flex items-center text-sm">
-                  <i className="bi bi-check-circle text-accent-400 mr-3"></i>
-                  <span>Priority support</span>
-                </li>
-                <li className="flex items-center text-sm">
-                  <i className="bi bi-check-circle text-accent-400 mr-3"></i>
-                  <span>Exclusive content</span>
-                </li>
-              </ul>
-
-              <button className="w-full py-2 px-4 bg-white text-primary-500 rounded-lg font-semibold hover:bg-gray-100 transition-colors duration-300">
-                Start Premium
-              </button>
-            </motion.div>
+                <button className={`w-full py-2 px-4 rounded-lg font-semibold transition-colors duration-300 ${
+                  plan.popular 
+                    ? 'bg-white text-primary-500 hover:bg-gray-100' 
+                    : 'border-2 border-primary-500 text-primary-500 hover:bg-primary-500 hover:text-white'
+                }`}>
+                  {plan.name === 'Free' && 'Get Started Free'}
+                  {plan.name === 'Premium' && 'Start Premium'}
+                  {plan.name === 'Pro' && 'Upgrade to Pro'}
+                </button>
+              </motion.div>
+            ))}
           </div>
 
           {/* Simple CTA */}

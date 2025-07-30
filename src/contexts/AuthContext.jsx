@@ -10,20 +10,19 @@ export const useAuth = () => {
   return context
 }
 
-// Mock user data for testing
+// Mock user data for testing - userType will be calculated automatically based on age and role
 const mockUsers = [
   {
     id: 1,
-    email: 'user@habitup.com',
+    email: 'adult@habitup.com',
     password: 'password123',
     firstName: 'John',
     lastName: 'Doe',
-    role: 'Adult',
-    userType: 'Adult',
+    role: 'User', // Regular user, type determined by age
     subscriptionType: 'Free',
     isEmailVerified: true,
     phone: '+1234567890',
-    dateOfBirth: '1990-01-01',
+    dateOfBirth: '1990-01-01', // 34 years old - Adult
     gender: 'MALE',
     profilePicture: null,
     joinDate: '2024-01-01',
@@ -39,12 +38,11 @@ const mockUsers = [
     password: 'password123',
     firstName: 'Emma',
     lastName: 'Smith',
-    role: 'Child',
-    userType: 'Child',
+    role: 'User', // Regular user, type determined by age
     subscriptionType: 'Premium',
     isEmailVerified: true,
     phone: '+1987654321',
-    dateOfBirth: '2015-05-15',
+    dateOfBirth: '2015-05-15', // 8 years old - Child
     gender: 'FEMALE',
     profilePicture: null,
     joinDate: '2024-01-15',
@@ -60,12 +58,11 @@ const mockUsers = [
     password: 'password123',
     firstName: 'Robert',
     lastName: 'Johnson',
-    role: 'Elder',
-    userType: 'Elder',
+    role: 'User', // Regular user, type determined by age
     subscriptionType: 'Premium',
     isEmailVerified: true,
     phone: '+1555666777',
-    dateOfBirth: '1955-03-20',
+    dateOfBirth: '1955-03-20', // 69 years old - Elder
     gender: 'MALE',
     profilePicture: null,
     joinDate: '2024-02-01',
@@ -81,12 +78,11 @@ const mockUsers = [
     password: 'password123',
     firstName: 'Dr. Sarah',
     lastName: 'Wilson',
-    role: 'Doctor',
-    userType: 'Doctor',
+    role: 'Doctor', // Doctor role overrides age-based determination
     subscriptionType: 'Professional',
     isEmailVerified: true,
     phone: '+1888999000',
-    dateOfBirth: '1980-08-10',
+    dateOfBirth: '1980-08-10', // 44 years old but role is Doctor
     gender: 'FEMALE',
     profilePicture: null,
     joinDate: '2024-01-10',
@@ -95,8 +91,75 @@ const mockUsers = [
       notifications: true,
       language: 'en'
     }
+  },
+  {
+    id: 5,
+    email: 'teen@habitup.com',
+    password: 'password123',
+    firstName: 'Alex',
+    lastName: 'Taylor',
+    role: 'User', // Regular user, type determined by age
+    subscriptionType: 'Free',
+    isEmailVerified: true,
+    phone: '+1999888777',
+    dateOfBirth: '2010-03-10', // 14 years old - Child
+    gender: 'OTHER',
+    profilePicture: null,
+    joinDate: '2024-01-20',
+    preferences: {
+      theme: 'light',
+      notifications: true,
+      language: 'en'
+    }
+  },
+  {
+    id: 6,
+    email: 'senior@habitup.com',
+    password: 'password123',
+    firstName: 'Margaret',
+    lastName: 'Williams',
+    role: 'User', // Regular user, type determined by age
+    subscriptionType: 'Premium',
+    isEmailVerified: true,
+    phone: '+1777666555',
+    dateOfBirth: '1950-12-25', // 73 years old - Elder
+    gender: 'FEMALE',
+    profilePicture: null,
+    joinDate: '2024-01-25',
+    preferences: {
+      theme: 'light',
+      notifications: true,
+      language: 'en'
+    }
   }
 ]
+
+// Function to determine user type based on age and role
+const determineUserType = (dateOfBirth, role) => {
+  // If role is Doctor, return Doctor regardless of age
+  if (role === 'Doctor') {
+    return 'Doctor'
+  }
+  
+  // Calculate age from dateOfBirth
+  const today = new Date()
+  const birthDate = new Date(dateOfBirth)
+  let age = today.getFullYear() - birthDate.getFullYear()
+  const monthDiff = today.getMonth() - birthDate.getMonth()
+  
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+    age--
+  }
+  
+  // Determine user type based on age
+  if (age < 18) {
+    return 'Child'
+  } else if (age >= 60) {
+    return 'Elder'
+  } else {
+    return 'Adult'
+  }
+}
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null)
@@ -115,7 +178,19 @@ export const AuthProvider = ({ children }) => {
       
       if (userData && token) {
         const parsedUser = JSON.parse(userData)
-        setUser(parsedUser)
+        
+        // Recalculate user type in case age has changed
+        const currentUserType = determineUserType(parsedUser.dateOfBirth, parsedUser.role)
+        const userWithUpdatedType = {
+          ...parsedUser,
+          userType: currentUserType
+        }
+        
+        // Update localStorage with recalculated user type
+        localStorage.setItem('habitup_user', JSON.stringify(userWithUpdatedType))
+        localStorage.setItem('userType', currentUserType)
+        
+        setUser(userWithUpdatedType)
         setIsAuthenticated(true)
       }
     } catch (error) {
@@ -140,18 +215,27 @@ export const AuthProvider = ({ children }) => {
       )
       
       if (foundUser) {
+        // Automatically determine user type based on age and role
+        const calculatedUserType = determineUserType(foundUser.dateOfBirth, foundUser.role)
+        
+        // Update user object with calculated user type
+        const userWithCalculatedType = {
+          ...foundUser,
+          userType: calculatedUserType
+        }
+        
         // Create mock token
         const token = `mock_token_${foundUser.id}_${Date.now()}`
         
         // Store in localStorage (matching HTML structure)
         localStorage.setItem('token', token)
         localStorage.setItem('habitup_token', token)
-        localStorage.setItem('habitup_user', JSON.stringify(foundUser))
+        localStorage.setItem('habitup_user', JSON.stringify(userWithCalculatedType))
         
         // Store individual fields for HTML compatibility
         localStorage.setItem('name', `${foundUser.firstName} ${foundUser.lastName}`)
         localStorage.setItem('email', foundUser.email)
-        localStorage.setItem('userType', foundUser.userType)
+        localStorage.setItem('userType', calculatedUserType)
         localStorage.setItem('subscriptionType', foundUser.subscriptionType)
         localStorage.setItem('phoneNo', foundUser.phone)
         localStorage.setItem('dob', foundUser.dateOfBirth)
@@ -160,7 +244,7 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem('userId', foundUser.id.toString())
         
         // Update state
-        setUser(foundUser)
+        setUser(userWithCalculatedType)
         setIsAuthenticated(true)
         
         console.log('Login successful, user authenticated:', foundUser)
